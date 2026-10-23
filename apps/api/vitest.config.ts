@@ -9,6 +9,8 @@ if (existsSync(rootEnvFile)) {
 
 export default defineConfig({
   test: {
+    // Tests never touch the development database.
+    env: { DATABASE_URL: process.env.TEST_DATABASE_URL ?? '' },
     projects: [
       {
         extends: true,
@@ -23,7 +25,6 @@ export default defineConfig({
           name: 'integration',
           include: ['src/**/*.int-spec.ts'],
           globalSetup: ['./test/integration-global-setup.ts'],
-          env: { DATABASE_URL: process.env.TEST_DATABASE_URL ?? '' },
           fileParallelism: false,
         },
       },

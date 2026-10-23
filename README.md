@@ -42,6 +42,15 @@ Las tablas de negocio solo son visibles dentro de `TenantTransactionRunner.run(b
 
 Las pruebas de integración usan la base `turnero_test` (`TEST_DATABASE_URL`) y necesitan `pnpm db:up`.
 
+## Autenticación
+
+El módulo `identity` (`apps/api/src/modules/identity`) maneja cuentas y sesiones:
+
+- `POST /auth/register`, `POST /auth/login`, `POST /auth/logout` y `GET /auth/me`.
+- La sesión es un token aleatorio en la cookie `turnero_session` (`httpOnly`, `SameSite=Lax`, `Secure` en producción); en la base solo se guarda su hash SHA-256. Dura 30 días.
+- Contraseñas con Argon2id. Login y registro tienen límite de 10 intentos por minuto.
+- Para proteger una ruta: `@UseGuards(SessionGuard)`. Para rutas de un negocio (`/businesses/:businessId/...`): `@UseGuards(SessionGuard, BusinessMemberGuard)` y `@CurrentMembership()` para obtener el negocio y el rol.
+
 Si cambias el script de roles, recrea el volumen con `docker compose down -v` (borra los datos locales).
 
 ## Scripts
