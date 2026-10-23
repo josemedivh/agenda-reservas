@@ -25,10 +25,24 @@ docs/        especificación y demo navegable
 cp .env.example .env
 pnpm install
 pnpm db:up        # PostgreSQL en :5432 y Redis en :6379
+pnpm db:deploy    # aplica las migraciones de Prisma
 pnpm dev          # web en http://localhost:3000, API en http://localhost:3001
 ```
 
 Comprueba la API con `GET http://localhost:3001/health`.
+
+## Base de datos
+
+PostgreSQL usa dos roles, creados por `docker/postgres/init/01-roles.sh` al crear el volumen:
+
+- `turnero_owner`: dueño del esquema; solo corre migraciones (`MIGRATION_DATABASE_URL`).
+- `turnero_app`: lo usa la API (`DATABASE_URL`). No es dueño de nada, así que Row Level Security siempre aplica.
+
+Las tablas de negocio solo son visibles dentro de `TenantTransactionRunner.run(businessId, ...)`, que fija el negocio actual en la transacción. Fuera de ella, las políticas no devuelven filas.
+
+Las pruebas de integración usan la base `turnero_test` (`TEST_DATABASE_URL`) y necesitan `pnpm db:up`.
+
+Si cambias el script de roles, recrea el volumen con `docker compose down -v` (borra los datos locales).
 
 ## Scripts
 

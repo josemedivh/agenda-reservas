@@ -2,7 +2,9 @@ packages:
   - apps/*
   - packages/*
 
-# Dependencies whose install scripts are not needed (prebuilt binaries are used).
+# Install scripts: Prisma downloads its migration engine; the others ship prebuilt binaries.
 allowBuilds:
+  '@prisma/engines': true
+  prisma: true
   sharp: false
   unrs-resolver: false

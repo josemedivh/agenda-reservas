@@ -14,8 +14,36 @@ jobs:
     name: Lint, typecheck and test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: turnero
+          POSTGRES_PASSWORD: turnero
+          POSTGRES_DB: turnero
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U turnero -d turnero"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      TEST_MIGRATION_DATABASE_URL: postgresql://turnero_owner:turnero_owner@localhost:5432/turnero_test
+      TEST_DATABASE_URL: postgresql://turnero_app:turnero_app@localhost:5432/turnero_test
+
     steps:
       - uses: actions/checkout@v7
+
+      - name: Create database roles
+        run: bash docker/postgres/init/01-roles.sh
+        env:
+          PGHOST: localhost
+          PGPASSWORD: turnero
+          POSTGRES_USER: turnero
+          POSTGRES_DB: turnero
 
       - uses: pnpm/action-setup@v6
 

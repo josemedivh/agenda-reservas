@@ -10,6 +10,7 @@ export default defineConfig([
     '**/.next/**',
     '**/.turbo/**',
     '**/coverage/**',
+    '**/src/generated/**',
     '**/next-env.d.ts',
     'docs/**',
   ]),

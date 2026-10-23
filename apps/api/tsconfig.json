@@ -8,5 +8,5 @@
     "strictPropertyInitialization": false,
     "types": ["node"]
   },
-  "include": ["src", "vitest.config.ts"]
+  "include": ["src", "test", "vitest.config.ts", "prisma.config.ts"]
 }

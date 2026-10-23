@@ -1,0 +1,77 @@
+// Tenant tables carry business_id and are protected by row level security policies
+// written in SQL inside the migrations (Prisma cannot express them).
+
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  runtime                = "nodejs"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum BusinessStatus {
+  ACTIVE    @map("active")
+  SUSPENDED @map("suspended")
+
+  @@map("business_status")
+}
+
+enum MemberRole {
+  OWNER    @map("owner")
+  ADMIN    @map("admin")
+  EMPLOYEE @map("employee")
+
+  @@map("member_role")
+}
+
+model Business {
+  id        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  slug      String         @unique
+  phone     String?
+  address   String?
+  logoUrl   String?        @map("logo_url")
+  timeZone  String         @map("time_zone")
+  status    BusinessStatus @default(ACTIVE)
+  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime       @updatedAt @map("updated_at") @db.Timestamptz
+
+  members Member[]
+
+  @@map("businesses")
+}
+
+// Global account (not tenant scoped): one user can manage several businesses.
+model User {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  memberships Member[]
+
+  @@map("users")
+}
+
+model Member {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId String     @map("business_id") @db.Uuid
+  userId     String     @map("user_id") @db.Uuid
+  role       MemberRole
+  createdAt  DateTime   @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime   @updatedAt @map("updated_at") @db.Timestamptz
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([businessId, userId])
+  @@index([userId])
+  @@map("members")
+}

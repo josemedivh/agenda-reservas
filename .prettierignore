@@ -4,3 +4,4 @@ dist
 .turbo
 coverage
 docs/demo
+apps/api/src/generated
