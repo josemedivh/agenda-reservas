@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Reserva · Barbería El Faro</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&amp;family=Figtree:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0E5A4C}a:hover{color:#08392F}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #2F7FD1;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #EEF1F3; color: #15212B; font-family: 'Figtree', system-ui, sans-serif; overflow: hidden">
+
+<sc-if value="{{booking}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; height: 844px">
+
+<header style="background: #15212B; color: #FFFFFF; padding: 28px 20px 22px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #A9C9C0">Reserva en línea</span>
+<h1 style="margin: 0; font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 36px; line-height: 1; text-transform: uppercase; letter-spacing: 0.01em">Barbería El Faro</h1>
+<div style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: #D4DCE2">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+<span>Av. 9 de Octubre 1204, Guayaquil</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #D4DCE2">
+<span style="width: 8px; height: 8px; border-radius: 50%; background: #5FD3A8" aria-hidden="true"></span>
+<span>Abierto hoy de 9:00 a 19:00</span>
+</div>
+</header>
+
+<main style="flex: 1; overflow-y: auto; padding: 22px 20px 24px; display: flex; flex-direction: column; gap: 28px">
+
+<section style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em">1. Servicio</h2>
+<sc-for list="{{services}}" as="s" hint-placeholder-count="4">
+<button type="button" onClick="{{s.pick}}" aria-pressed="{{s.pressed}}" style="{{s.style}}">
+<span style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 16px; font-weight: 600">{{s.name}}</span>
+<span style="font-size: 13px; color: #56646F">{{s.minLabel}}</span>
+</span>
+<span style="font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums">{{s.priceLabel}}</span>
+</button>
+</sc-for>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em">2. Profesional</h2>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{pros}}" as="p" hint-placeholder-count="3">
+<button type="button" onClick="{{p.pick}}" aria-pressed="{{p.pressed}}" style="{{p.style}}">
+<span style="{{p.avatarStyle}}" aria-hidden="true">{{p.ini}}</span>
+<span style="font-size: 14px; font-weight: 600">{{p.name}}</span>
+</button>
+</sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em">3. Día y hora</h2>
+<div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="6">
+<button type="button" onClick="{{d.pick}}" disabled="{{d.closed}}" aria-pressed="{{d.pressed}}" aria-label="{{d.aria}}" style="{{d.style}}">
+<span style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em">{{d.d}}</span>
+<span style="font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums">{{d.n}}</span>
+</button>
+</sc-for>
+</div>
+<p style="margin: 0; font-size: 13px; color: #56646F">{{dayNote}}</p>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{slots}}" as="t" hint-placeholder-count="20">
+<button type="button" onClick="{{t.pick}}" disabled="{{t.taken}}" aria-pressed="{{t.pressed}}" aria-label="{{t.aria}}" style="{{t.style}}">{{t.label}}</button>
+</sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em">4. Tus datos</h2>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="cliente-nombre" style="font-size: 14px; font-weight: 600">Nombre</label>
+<input id="cliente-nombre" type="text" value="{{name}}" onInput="{{setName}}" autocomplete="name" style="height: 48px; box-sizing: border-box; padding: 0 14px; border: 1px solid #C3CCD3; border-radius: 10px; background: #FFFFFF; font: inherit; font-size: 16px; color: #15212B">
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="cliente-telefono" style="font-size: 14px; font-weight: 600">WhatsApp</label>
+<input id="cliente-telefono" type="tel" value="{{phone}}" onInput="{{setPhone}}" autocomplete="tel" placeholder="09xx xxx xxx" style="height: 48px; box-sizing: border-box; padding: 0 14px; border: 1px solid #C3CCD3; border-radius: 10px; background: #FFFFFF; font: inherit; font-size: 16px; color: #15212B; font-variant-numeric: tabular-nums">
+</div>
+<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #56646F">Te llega la confirmación por WhatsApp y un recordatorio un día antes. No necesitas crear cuenta.</p>
+</section>
+
+</main>
+
+<footer style="background: #FFFFFF; border-top: 1px solid #D3DAE0; padding: 12px 20px 16px; display: flex; align-items: center; gap: 14px">
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 13px; color: #56646F; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{summaryLine}}</span>
+<span style="font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums">{{totalLabel}}</span>
+</div>
+<button type="button" onClick="{{book}}" disabled="{{cannotBook}}" style="{{bookStyle}}">{{bookLabel}}</button>
+</footer>
+
+</div>
+</sc-if>
+
+<sc-if value="{{done}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; height: 844px; box-sizing: border-box; padding: 40px 20px 24px; gap: 22px; overflow-y: auto">
+<div style="width: 56px; height: 56px; border-radius: 50%; background: #0E5A4C; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 34px; line-height: 1.05; text-transform: uppercase">Reserva confirmada</h1>
+<p style="margin: 0; font-size: 15px; color: #56646F">{{doneGreeting}}</p>
+</div>
+
+<dl style="margin: 0; background: #FFFFFF; border: 1px solid #D3DAE0; border-radius: 14px; padding: 6px 16px; display: flex; flex-direction: column">
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid #E4E9ED"><dt style="color: #56646F; font-size: 14px">Servicio</dt><dd style="margin: 0; font-weight: 600; font-size: 14px; text-align: right">{{svcName}}</dd></div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid #E4E9ED"><dt style="color: #56646F; font-size: 14px">Profesional</dt><dd style="margin: 0; font-weight: 600; font-size: 14px; text-align: right">{{proName}}</dd></div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid #E4E9ED"><dt style="color: #56646F; font-size: 14px">Fecha</dt><dd style="margin: 0; font-weight: 600; font-size: 14px; text-align: right">{{dayFull}}</dd></div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid #E4E9ED"><dt style="color: #56646F; font-size: 14px">Hora</dt><dd style="margin: 0; font-weight: 600; font-size: 14px; text-align: right; font-variant-numeric: tabular-nums">{{timeRange}}</dd></div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 11px 0"><dt style="color: #56646F; font-size: 14px">A pagar en el local</dt><dd style="margin: 0; font-weight: 700; font-size: 14px; text-align: right; font-variant-numeric: tabular-nums">{{totalLabel}}</dd></div>
+</dl>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #56646F">Recordatorio que recibirá por WhatsApp</span>
+<div style="align-self: flex-start; max-width: 300px; background: #DCF3E6; color: #15212B; border-radius: 4px 14px 14px 14px; padding: 12px 14px; font-size: 14px; line-height: 1.45">{{reminder}}</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: auto">
+<button type="button" onClick="{{reschedule}}" style="height: 48px; border-radius: 12px; border: 1px solid #0E5A4C; background: #FFFFFF; color: #0E5A4C; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Reagendar</button>
+<button type="button" onClick="{{cancel}}" style="height: 48px; border-radius: 12px; border: 1px solid #C3CCD3; background: #FFFFFF; color: #A1261B; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Cancelar cita</button>
+</div>
+<a href="Agenda.dc.html" style="align-self: center; font-size: 14px; font-weight: 600; padding: 8px 4px">Ver cómo le llega al dueño</a>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { svc: 'combo', pro: 'carlos', day: 0, time: '10:00', name: 'Miguel Torres', phone: '0991 234 567', done: false };
+  }
+  renderVals() {
+    var st = this.state;
+    var self = this;
+    var SERVICES = [
+      { id: 'clasico', name: 'Corte clásico', min: 30, price: 8 },
+      { id: 'combo', name: 'Corte + barba', min: 45, price: 12 },
+      { id: 'degradado', name: 'Degradado', min: 40, price: 10 },
+      { id: 'barba', name: 'Arreglo de barba', min: 20, price: 6 }
+    ];
+    var PROS = [
+      { id: 'carlos', name: 'Carlos', ini: 'C' },
+      { id: 'andres', name: 'Andrés', ini: 'A' },
+      { id: 'any', name: 'Cualquiera', ini: '+' }
+    ];
+    var DAYS = [
+      { d: 'Vie', n: 23, full: 'Viernes 23 de octubre' },
+      { d: 'Sáb', n: 24, full: 'Sábado 24 de octubre' },
+      { d: 'Dom', n: 25, full: 'Domingo 25 de octubre', closed: true },
+      { d: 'Lun', n: 26, full: 'Lunes 26 de octubre' },
+      { d: 'Mar', n: 27, full: 'Martes 27 de octubre' },
+      { d: 'Mié', n: 28, full: 'Miércoles 28 de octubre' }
+    ];
+    var TAKEN = {
+      0: ['9:00', '9:30', '11:00', '12:30', '15:00', '17:30'],
+      1: ['9:00', '9:30', '10:00', '10:30', '11:00', '14:00', '14:30', '16:00'],
+      3: ['10:00', '16:30'],
+      4: ['9:30', '12:00', '15:30'],
+      5: ['11:00', '18:00']
+    };
+    var times = [];
+    for (var h = 9; h < 19; h++) { times.push(h + ':00'); times.push(h + ':30'); }
+
+    var svc = SERVICES.find(function (s) { return s.id === st.svc; });
+    var pro = PROS.find(function (p) { return p.id === st.pro; });
+    var day = DAYS[st.day];
+    var taken = TAKEN[st.day] || [];
+
+    var card = 'display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; box-sizing: border-box; min-height: 64px; border-radius: 12px; cursor: pointer; text-align: left; font: inherit; color: #15212B; ';
+    var services = SERVICES.map(function (s) {
+      var on = s.id === st.svc;
+      return {
+        name: s.name, minLabel: s.min + ' min', priceLabel: '$' + s.price,
+        pressed: on ? 'true' : 'false',
+        style: card + (on ? 'padding: 13px 15px; border: 2px solid #0E5A4C; background: #E2EEEA;' : 'padding: 14px 16px; border: 1px solid #D3DAE0; background: #FFFFFF;'),
+        pick: function () { self.setState({ svc: s.id }); }
+      };
+    });
+
+    var pros = PROS.map(function (p) {
+      var on = p.id === st.pro;
+      return {
+        name: p.name, ini: p.ini, pressed: on ? 'true' : 'false',
+        style: 'display: flex; flex-direction: column; align-items: center; gap: 8px; box-sizing: border-box; border-radius: 12px; cursor: pointer; font: inherit; color: #15212B; ' + (on ? 'padding: 13px 5px; border: 2px solid #0E5A4C; background: #E2EEEA;' : 'padding: 14px 6px; border: 1px solid #D3DAE0; background: #FFFFFF;'),
+        avatarStyle: 'width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: \'Archivo Narrow\', \'Arial Narrow\', sans-serif; font-size: 18px; font-weight: 700; ' + (on ? 'background: #0E5A4C; color: #FFFFFF;' : 'background: #E4E9ED; color: #15212B;'),
+        pick: function () { self.setState({ pro: p.id }); }
+      };
+    });
+
+    var days = DAYS.map(function (d, i) {
+      var on = i === st.day;
+      var base = 'flex: 0 0 56px; height: 64px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-radius: 12px; font: inherit; ';
+      var look;
+      if (d.closed) look = 'border: 1px dashed #C3CCD3; background: transparent; color: #7B8893; cursor: not-allowed;';
+      else if (on) look = 'border: none; background: #15212B; color: #FFFFFF; cursor: pointer;';
+      else look = 'border: 1px solid #D3DAE0; background: #FFFFFF; color: #15212B; cursor: pointer;';
+      return {
+        d: d.d, n: d.n, closed: !!d.closed, pressed: on ? 'true' : 'false',
+        aria: d.full + (d.closed ? ', cerrado' : ''),
+        style: base + look,
+        pick: function () { if (!d.closed) self.setState({ day: i, time: null }); }
+      };
+    });
+
+    var slots = times.map(function (t) {
+      var isTaken = taken.indexOf(t) >= 0;
+      var on = t === st.time && !isTaken;
+      var base = 'height: 44px; border-radius: 10px; font: inherit; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; ';
+      var look;
+      if (isTaken) look = 'border: 1px dashed #C3CCD3; background: transparent; color: #7B8893; text-decoration: line-through; cursor: not-allowed;';
+      else if (on) look = 'border: none; background: #0E5A4C; color: #FFFFFF; cursor: pointer;';
+      else look = 'border: 1px solid #D3DAE0; background: #FFFFFF; color: #15212B; cursor: pointer;';
+      return {
+        label: t, taken: isTaken, pressed: on ? 'true' : 'false',
+        aria: t + (isTaken ? ', ocupado' : ', disponible'),
+        style: base + look,
+        pick: function () { self.setState({ time: t }); }
+      };
+    });
+
+    var free = times.length - taken.length;
+    var hasData = st.name.trim().length > 1 && st.phone.replace(/\D/g, '').length >= 9;
+    var ready = !!st.time && hasData;
+
+    var endTime = '';
+    if (st.time) {
+      var parts = st.time.split(':');
+      var mins = Number(parts[0]) * 60 + Number(parts[1]) + svc.min;
+      var mm = mins % 60;
+      endTime = Math.floor(mins / 60) + ':' + (mm < 10 ? '0' + mm : mm);
+    }
+    var proLabel = pro.id === 'any' ? 'El primero disponible' : pro.name;
+    var firstName = st.name.trim().split(' ')[0] || 'cliente';
+
+    return {
+      booking: !st.done,
+      done: st.done,
+      services: services, pros: pros, days: days, slots: slots,
+      dayNote: day.full + ' · ' + free + ' horarios libres',
+      name: st.name, phone: st.phone,
+      setName: function (e) { self.setState({ name: e.target.value }); },
+      setPhone: function (e) { self.setState({ phone: e.target.value }); },
+      summaryLine: svc.name + ' · ' + (st.time ? day.d + ' ' + day.n + ', ' + st.time : 'elige una hora'),
+      totalLabel: '$' + svc.price + '.00',
+      cannotBook: !ready,
+      bookLabel: !st.time ? 'Elige hora' : (hasData ? 'Reservar' : 'Faltan datos'),
+      bookStyle: 'flex: 0 0 auto; height: 50px; padding: 0 26px; border: none; border-radius: 12px; font: inherit; font-size: 16px; font-weight: 700; ' + (ready ? 'background: #0E5A4C; color: #FFFFFF; cursor: pointer;' : 'background: #D3DAE0; color: #4B5A65; cursor: not-allowed;'),
+      book: function () { if (ready) self.setState({ done: true }); },
+      doneGreeting: 'Gracias, ' + firstName + '. Te esperamos en Barbería El Faro.',
+      svcName: svc.name + ' (' + svc.min + ' min)',
+      proName: proLabel,
+      dayFull: day.full,
+      timeRange: st.time ? st.time + ' a ' + endTime : '',
+      reminder: 'Hola ' + firstName + ', te recordamos tu cita de ' + svc.name.toLowerCase() + ' mañana a las ' + st.time + ' en Barbería El Faro. Responde 1 para confirmar o 2 para cancelar.',
+      reschedule: function () { self.setState({ done: false, time: null }); },
+      cancel: function () { self.setState({ done: false, time: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

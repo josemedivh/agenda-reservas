@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Agenda · Barbería El Faro</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&amp;family=Figtree:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#A9C9C0}a:hover{color:#FFFFFF}
+button:focus-visible,a:focus-visible{outline:3px solid #2F7FD1;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #EEF1F3; color: #15212B; font-family: 'Figtree', system-ui, sans-serif; overflow: hidden; position: relative">
+
+<header style="background: #15212B; color: #FFFFFF; padding: 24px 20px 18px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+<span style="font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #A9C9C0">Barbería El Faro</span>
+<a href="Main.dc.html" style="font-size: 13px; font-weight: 600">Ver página de reservas</a>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<button type="button" aria-label="Día anterior" style="width: 44px; height: 44px; border-radius: 10px; border: 1px solid #3A4854; background: transparent; color: #FFFFFF; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+</button>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 2px">
+<h1 style="margin: 0; font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 30px; line-height: 1; text-transform: uppercase">Agenda de hoy</h1>
+<span style="font-size: 14px; color: #D4DCE2">Viernes 23 de octubre</span>
+</div>
+<button type="button" aria-label="Día siguiente" style="width: 44px; height: 44px; border-radius: 10px; border: 1px solid #3A4854; background: transparent; color: #FFFFFF; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+</button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<div style="background: #1F2D39; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums">{{countLabel}}</span>
+<span style="font-size: 12px; color: #C4CED6">Citas</span>
+</div>
+<div style="background: #1F2D39; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums">{{noShowLabel}}</span>
+<span style="font-size: 12px; color: #C4CED6">No asistieron</span>
+</div>
+<div style="background: #1F2D39; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; color: #7FE0BB">{{totalLabel}}</span>
+<span style="font-size: 12px; color: #C4CED6">Estimado</span>
+</div>
+</div>
+</header>
+
+<div style="padding: 14px 20px 6px; display: flex; gap: 8px; flex-wrap: wrap" role="group" aria-label="Filtrar por profesional">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="3">
+<button type="button" onClick="{{f.pick}}" aria-pressed="{{f.pressed}}" style="{{f.style}}">{{f.label}}</button>
+</sc-for>
+</div>
+
+<main style="flex: 1; overflow-y: auto; padding: 8px 20px 104px; display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+<div style="display: flex; gap: 12px; align-items: flex-start">
+<span style="flex: 0 0 48px; padding-top: 14px; font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif; font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; color: #15212B">{{r.time}}</span>
+
+<sc-if value="{{r.isFree}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; min-width: 0; border: 1px dashed #B9C3CB; border-radius: 12px; padding: 13px 14px; font-size: 14px; color: #56646F">{{r.freeLabel}}</div>
+</sc-if>
+
+<sc-if value="{{r.isAppt}}" hint-placeholder-val="{{ true }}">
+<div style="{{r.cardStyle}}">
+<div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px">
+<div style="display: flex; flex-direction: column; gap: 3px; min-width: 0">
+<span style="font-size: 16px; font-weight: 600">{{r.client}}</span>
+<span style="font-size: 13px; color: #56646F">{{r.detail}}</span>
+</div>
+<span style="{{r.pillStyle}}">{{r.status}}</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #56646F">
+<span style="{{r.avatarStyle}}" aria-hidden="true">{{r.ini}}</span>
+<span>{{r.pro}}</span>
+<span style="margin-left: auto; font-weight: 600; color: #15212B; font-variant-numeric: tabular-nums">{{r.price}}</span>
+</div>
+<sc-if value="{{r.canMark}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<button type="button" onClick="{{r.markArrived}}" style="height: 44px; border-radius: 10px; border: 1px solid #0E5A4C; background: #FFFFFF; color: #0E5A4C; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">Llegó</button>
+<button type="button" onClick="{{r.markNoShow}}" style="height: 44px; border-radius: 10px; border: 1px solid #C3CCD3; background: #FFFFFF; color: #A1261B; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">No asistió</button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</main>
+
+<button type="button" style="position: absolute; right: 20px; bottom: 88px; height: 52px; padding: 0 20px; border: none; border-radius: 26px; background: #0E5A4C; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 6px 18px rgba(14, 90, 76, 0.32)">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+Nueva cita
+</button>
+
+<nav aria-label="Secciones" style="position: absolute; left: 0; right: 0; bottom: 0; background: #FFFFFF; border-top: 1px solid #D3DAE0; padding: 8px 12px 12px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
+<button type="button" aria-current="page" style="height: 52px; border: none; background: transparent; font: inherit; font-size: 12px; font-weight: 700; color: #0E5A4C; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg>
+Agenda
+</button>
+<button type="button" style="height: 52px; border: none; background: transparent; font: inherit; font-size: 12px; font-weight: 600; color: #56646F; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"></path><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.8c2 .8 3.2 2.5 3.5 5.2"></path></svg>
+Clientes
+</button>
+<button type="button" style="height: 52px; border: none; background: transparent; font: inherit; font-size: 12px; font-weight: 600; color: #56646F; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6.5" cy="7" r="2.5"></circle><circle cx="6.5" cy="17" r="2.5"></circle><path d="M8.6 8.5L20 17M8.6 15.5L20 7"></path></svg>
+Servicios
+</button>
+<button type="button" style="height: 52px; border: none; background: transparent; font: inherit; font-size: 12px; font-weight: 600; color: #56646F; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>
+Ajustes
+</button>
+</nav>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { filter: 'todos', status: {} };
+  }
+  renderVals() {
+    var st = this.state;
+    var self = this;
+    var APPTS = [
+      { id: 'a1', time: '9:00', client: 'Luis Andrade', svc: 'Corte clásico', min: 30, price: 8, pro: 'carlos', status: 'Completada' },
+      { id: 'a2', time: '9:30', client: 'Diego Mora', svc: 'Corte + barba', min: 45, price: 12, pro: 'andres', status: 'Completada' },
+      { id: 'a3', time: '10:00', client: 'Miguel Torres', svc: 'Corte + barba', min: 45, price: 12, pro: 'carlos', status: 'Confirmada' },
+      { id: 'a4', time: '10:30', client: 'Kevin Salazar', svc: 'Degradado', min: 40, price: 10, pro: 'andres', status: 'Confirmada' },
+      { id: 'a5', time: '11:00', client: 'Jorge Paredes', svc: 'Arreglo de barba', min: 20, price: 6, pro: 'carlos', status: 'Pendiente' },
+      { id: 'free1', time: '11:30', free: 'Libre hasta las 12:30' },
+      { id: 'a6', time: '12:30', client: 'Bryan Castro', svc: 'Degradado', min: 40, price: 10, pro: 'andres', status: 'Confirmada' },
+      { id: 'a7', time: '15:00', client: 'Santiago Vera', svc: 'Corte clásico', min: 30, price: 8, pro: 'carlos', status: 'Pendiente' },
+      { id: 'a8', time: '16:00', client: 'Mateo Alvarado', svc: 'Corte + barba', min: 45, price: 12, pro: 'andres', status: 'Confirmada' },
+      { id: 'a9', time: '17:30', client: 'Paúl Reyes', svc: 'Corte clásico', min: 30, price: 8, pro: 'carlos', status: 'Confirmada' }
+    ];
+    var PRO = { carlos: { name: 'Carlos', ini: 'C', bg: '#0E5A4C', fg: '#FFFFFF' }, andres: { name: 'Andrés', ini: 'A', bg: '#B9D7EE', fg: '#15212B' } };
+    var PILL = {
+      'Completada': 'background: #E4E9ED; color: #3F4D58;',
+      'Confirmada': 'background: #DCEEE8; color: #0B4A3E;',
+      'Pendiente': 'background: #FBEFD5; color: #7A4F00;',
+      'No asistió': 'background: #FBE3E0; color: #A1261B;'
+    };
+
+    var count = 0, noShow = 0, total = 0;
+    var rows = [];
+    APPTS.forEach(function (a) {
+      if (a.free) {
+        if (st.filter === 'todos') rows.push({ time: a.time, isFree: true, isAppt: false, freeLabel: a.free, canMark: false });
+        return;
+      }
+      if (st.filter !== 'todos' && a.pro !== st.filter) return;
+      var status = st.status[a.id] || a.status;
+      count++;
+      if (status === 'No asistió') noShow++; else total += a.price;
+      var p = PRO[a.pro];
+      var dim = status === 'No asistió';
+      rows.push({
+        time: a.time, isFree: false, isAppt: true,
+        client: a.client, detail: a.svc + ' · ' + a.min + ' min',
+        pro: p.name, ini: p.ini, price: '$' + a.price,
+        status: status,
+        pillStyle: 'flex: 0 0 auto; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; ' + PILL[status],
+        avatarStyle: 'width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; background: ' + p.bg + '; color: ' + p.fg + ';',
+        cardStyle: 'flex: 1; min-width: 0; box-sizing: border-box; background: #FFFFFF; border: 1px solid #D3DAE0; border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;' + (dim ? ' opacity: 0.72;' : ''),
+        canMark: status === 'Confirmada' || status === 'Pendiente',
+        markArrived: function () { var s = Object.assign({}, st.status); s[a.id] = 'Completada'; self.setState({ status: s }); },
+        markNoShow: function () { var s = Object.assign({}, st.status); s[a.id] = 'No asistió'; self.setState({ status: s }); }
+      });
+    });
+
+    var FILTERS = [{ id: 'todos', label: 'Todos' }, { id: 'carlos', label: 'Carlos' }, { id: 'andres', label: 'Andrés' }];
+    var filters = FILTERS.map(function (f) {
+      var on = f.id === st.filter;
+      return {
+        label: f.label, pressed: on ? 'true' : 'false',
+        style: 'height: 40px; padding: 0 16px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; ' + (on ? 'border: none; background: #15212B; color: #FFFFFF;' : 'border: 1px solid #C3CCD3; background: #FFFFFF; color: #15212B;'),
+        pick: function () { self.setState({ filter: f.id }); }
+      };
+    });
+
+    return {
+      filters: filters,
+      rows: rows,
+      countLabel: String(count),
+      noShowLabel: String(noShow),
+      totalLabel: '$' + total
+    };
+  }
+}
+</script>
+</body>
+</html>
