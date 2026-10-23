@@ -21,13 +21,13 @@ Construiremos un sistema web de agenda y reservas en línea para negocios de ser
 
 Suscripción mensual con 30 días de prueba gratis sin pedir tarjeta. Precios iniciales a validar:
 
-| Plan | Profesionales | Precio (USD/mes) |
-| --- | --- | --- |
-| Prueba | Hasta 5 | 0 (30 días) |
-| Básico | 1 | 10 |
-| Negocio | Hasta 5 | 20 |
-| Anual | Según plan | 10 meses pagados por 12 |
-| Negocio + Facturación (futuro) | Hasta 5 | Por definir |
+| Plan                           | Profesionales | Precio (USD/mes)        |
+| ------------------------------ | ------------- | ----------------------- |
+| Prueba                         | Hasta 5       | 0 (30 días)             |
+| Básico                         | 1             | 10                      |
+| Negocio                        | Hasta 5       | 20                      |
+| Anual                          | Según plan    | 10 meses pagados por 12 |
+| Negocio + Facturación (futuro) | Hasta 5       | Por definir             |
 
 El costo variable a vigilar son los mensajes de la API oficial de WhatsApp, que se cobran por mensaje.
 
@@ -35,18 +35,18 @@ El costo variable a vigilar son los mensajes de la API oficial de WhatsApp, que 
 
 Monolito modular en TypeScript, con arquitectura limpia (hexagonal) por módulo y principios SOLID. Sin microservicios al inicio.
 
-| Parte | Tecnología | Motivo |
-| --- | --- | --- |
-| Backend (API) | NestJS | Módulos e inyección de dependencias |
-| Frontend | Next.js (React) | Página pública de reservas y panel del negocio |
-| Base de datos | PostgreSQL | Relaciones, seguridad por fila, restricciones contra reservas dobles |
-| Acceso a datos | Prisma | Tipos y migraciones |
-| Tareas en segundo plano | Redis + BullMQ | Recordatorios a la hora exacta |
-| Mensajes | API oficial de WhatsApp + correo | Confirmaciones y recordatorios |
-| Repositorio | Monorepo con pnpm + Turborepo | Backend, frontend y código compartido |
-| Contenedores | Docker / Docker Compose | Mismo entorno en local y producción |
-| Integración continua | GitHub Actions | Lint, pruebas y despliegue |
-| Monitoreo | Sentry | Errores de producción |
+| Parte                   | Tecnología                       | Motivo                                                               |
+| ----------------------- | -------------------------------- | -------------------------------------------------------------------- |
+| Backend (API)           | NestJS                           | Módulos e inyección de dependencias                                  |
+| Frontend                | Next.js (React)                  | Página pública de reservas y panel del negocio                       |
+| Base de datos           | PostgreSQL                       | Relaciones, seguridad por fila, restricciones contra reservas dobles |
+| Acceso a datos          | Prisma                           | Tipos y migraciones                                                  |
+| Tareas en segundo plano | Redis + BullMQ                   | Recordatorios a la hora exacta                                       |
+| Mensajes                | API oficial de WhatsApp + correo | Confirmaciones y recordatorios                                       |
+| Repositorio             | Monorepo con pnpm + Turborepo    | Backend, frontend y código compartido                                |
+| Contenedores            | Docker / Docker Compose          | Mismo entorno en local y producción                                  |
+| Integración continua    | GitHub Actions                   | Lint, pruebas y despliegue                                           |
+| Monitoreo               | Sentry                           | Errores de producción                                                |
 
 **Módulos del monolito:** identidad y acceso, negocios, catálogo (servicios y profesionales), disponibilidad, reservas, clientes, notificaciones, suscripciones y, en el futuro, facturación.
 
@@ -65,19 +65,19 @@ Regla: el dominio no importa nada de las capas externas. Los casos de uso depend
 
 Todas las tablas de negocio llevan el identificador del negocio (inquilino). La disponibilidad no se guarda: se calcula a partir de horarios, bloqueos y citas.
 
-| Tabla | Campos principales | Notas |
-| --- | --- | --- |
-| Negocio | nombre, slug, teléfono, dirección, logo, zona horaria, estado | El slug forma su link público |
-| Usuario | correo, contraseña cifrada, nombre | Cuenta para entrar al panel |
-| Miembro | usuario, negocio, rol (dueño, administrador, empleado) | Un usuario puede manejar varios negocios |
-| Profesional | nombre, color, activo, usuario (opcional) | Puede no tener cuenta propia |
-| Servicio | nombre, duración, precio, tiempo de preparación, activo | Muchos a muchos con profesionales |
-| Horario de trabajo | profesional, día de la semana, hora inicio, hora fin | Varios rangos por día; hora local |
-| Bloqueo | inicio, fin, motivo, profesional (opcional) | Sin profesional aplica a todo el negocio |
-| Cliente | nombre, teléfono, correo, notas | Único por teléfono dentro del negocio |
-| Cita | profesional, servicio, cliente, inicio, fin, estado, origen, copia de nombre y precio, código de cancelación | Estados: pendiente, confirmada, cancelada, completada, no asistió |
-| Notificación | cita, canal, tipo, programada para, enviada, estado, error | Confirmación y recordatorio |
-| Suscripción | plan, estado, fin de prueba, fin de periodo | Estados: prueba, activa, pago atrasado, cancelada |
+| Tabla              | Campos principales                                                                                           | Notas                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| Negocio            | nombre, slug, teléfono, dirección, logo, zona horaria, estado                                                | El slug forma su link público                                     |
+| Usuario            | correo, contraseña cifrada, nombre                                                                           | Cuenta para entrar al panel                                       |
+| Miembro            | usuario, negocio, rol (dueño, administrador, empleado)                                                       | Un usuario puede manejar varios negocios                          |
+| Profesional        | nombre, color, activo, usuario (opcional)                                                                    | Puede no tener cuenta propia                                      |
+| Servicio           | nombre, duración, precio, tiempo de preparación, activo                                                      | Muchos a muchos con profesionales                                 |
+| Horario de trabajo | profesional, día de la semana, hora inicio, hora fin                                                         | Varios rangos por día; hora local                                 |
+| Bloqueo            | inicio, fin, motivo, profesional (opcional)                                                                  | Sin profesional aplica a todo el negocio                          |
+| Cliente            | nombre, teléfono, correo, notas                                                                              | Único por teléfono dentro del negocio                             |
+| Cita               | profesional, servicio, cliente, inicio, fin, estado, origen, copia de nombre y precio, código de cancelación | Estados: pendiente, confirmada, cancelada, completada, no asistió |
+| Notificación       | cita, canal, tipo, programada para, enviada, estado, error                                                   | Confirmación y recordatorio                                       |
+| Suscripción        | plan, estado, fin de prueba, fin de periodo                                                                  | Estados: prueba, activa, pago atrasado, cancelada                 |
 
 **Decisiones de diseño:**
 

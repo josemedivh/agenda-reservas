@@ -31,6 +31,7 @@ Monolito modular. Cada módulo de `apps/api/src/modules/<modulo>/` sigue arquite
 ```
 
 Reglas:
+
 - `domain` no importa NestJS, Prisma ni nada de otras capas.
 - Los casos de uso dependen de puertos (interfaces); la infraestructura los implementa y se inyectan con NestJS.
 - Un módulo no accede a las tablas de otro: se comunica por su API pública (servicios exportados) o por eventos.

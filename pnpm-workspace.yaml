@@ -1,0 +1,8 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Dependencies whose install scripts are not needed (prebuilt binaries are used).
+allowBuilds:
+  sharp: false
+  unrs-resolver: false
