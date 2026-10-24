@@ -2,6 +2,7 @@ import {
   SESSION_COOKIE_NAME,
   type BusinessDetails,
   type CurrentUserResponse,
+  type Professional,
 } from '@turnero/shared';
 import { cookies } from 'next/headers';
 
@@ -39,4 +40,17 @@ export async function fetchCurrentUser(): Promise<CurrentUserResponse | null> {
 
 export function fetchBusiness(businessId: string): Promise<ApiResult<BusinessDetails>> {
   return getFromApi<BusinessDetails>(`/businesses/${encodeURIComponent(businessId)}`);
+}
+
+export function fetchProfessionals(businessId: string): Promise<ApiResult<Professional[]>> {
+  return getFromApi<Professional[]>(`/businesses/${encodeURIComponent(businessId)}/professionals`);
+}
+
+export function fetchProfessional(
+  businessId: string,
+  professionalId: string,
+): Promise<ApiResult<Professional>> {
+  return getFromApi<Professional>(
+    `/businesses/${encodeURIComponent(businessId)}/professionals/${encodeURIComponent(professionalId)}`,
+  );
 }

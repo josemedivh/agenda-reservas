@@ -4,3 +4,4 @@ import './zod-locale.js';
 export * from './auth.js';
 export * from './http.js';
 export * from './business.js';
+export * from './professional.js';

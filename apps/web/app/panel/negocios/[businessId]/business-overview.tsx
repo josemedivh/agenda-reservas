@@ -4,13 +4,55 @@ import { formatPhone, ROLE_LABELS, timeZoneLabel } from '../../../../lib/format'
 import { publicBusinessAddress } from '../../../../lib/site';
 import styles from '../../panel.module.css';
 
-export function BusinessOverview({ business }: { business: BusinessDetails }) {
+function professionalsSummary(count: number): string {
+  if (count === 0) {
+    return 'Aún no agregas ninguno';
+  }
+  return count === 1 ? '1 activo' : `${String(count)} activos`;
+}
+
+/** Steps to get the business ready for bookings; later steps arrive with their features. */
+function SetupGuide(props: { businessId: string; activeProfessionals: number }) {
+  return (
+    <section className={styles.section} aria-labelledby="configura">
+      <h2 id="configura" className={styles.sectionTitle}>
+        Configura tu negocio
+      </h2>
+      <ol className={styles.list}>
+        <li>
+          <Link
+            href={`/panel/negocios/${props.businessId}/profesionales`}
+            className={[styles.card, styles.cardLink].join(' ')}
+          >
+            <span className={styles.businessName}>1. Profesionales</span>
+            <span className={styles.muted}>{professionalsSummary(props.activeProfessionals)}</span>
+          </Link>
+        </li>
+        <li className={styles.card}>
+          <span className={styles.businessName}>2. Servicios</span>
+          <span className={styles.muted}>Próximamente</span>
+        </li>
+        <li className={styles.card}>
+          <span className={styles.businessName}>3. Horarios</span>
+          <span className={styles.muted}>Próximamente</span>
+        </li>
+      </ol>
+    </section>
+  );
+}
+
+export function BusinessOverview(props: {
+  business: BusinessDetails;
+  activeProfessionals: number;
+}) {
+  const { business } = props;
   return (
     <>
       <Link href="/panel" className={styles.backLink}>
         ← Tus negocios
       </Link>
       <h1 className={styles.title}>{business.name}</h1>
+      <SetupGuide businessId={business.id} activeProfessionals={props.activeProfessionals} />
       <section className={styles.card} aria-labelledby="datos">
         <h2 id="datos" className={styles.sectionTitle}>
           Datos del negocio

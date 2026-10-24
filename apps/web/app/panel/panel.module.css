@@ -177,3 +177,9 @@
   margin: 0;
   overflow-wrap: anywhere;
 }
+
+.row {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}

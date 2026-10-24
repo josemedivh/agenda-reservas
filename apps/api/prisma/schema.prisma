@@ -42,7 +42,8 @@ model Business {
   createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime       @updatedAt @map("updated_at") @db.Timestamptz
 
-  members Member[]
+  members       Member[]
+  professionals Professional[]
 
   @@map("businesses")
 }
@@ -56,8 +57,9 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  memberships Member[]
-  sessions    Session[]
+  memberships   Member[]
+  sessions      Session[]
+  professionals Professional[]
 
   @@map("users")
 }
@@ -91,4 +93,24 @@ model Member {
   @@unique([businessId, userId])
   @@index([userId])
   @@map("members")
+}
+
+// Who attends the appointments. Never deleted: deactivated (active = false) instead.
+model Professional {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId String   @map("business_id") @db.Uuid
+  name       String
+  // Avatar color from the shared palette (#RRGGBB).
+  color      String
+  active     Boolean  @default(true)
+  // Optional account of the professional (for a future employee login).
+  userId     String?  @map("user_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([businessId])
+  @@map("professionals")
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import styles from '../../panel.module.css';
-import { loadBusiness } from '../load-business';
+import { loadBusiness, loadProfessionals } from '../load-business';
 import { BusinessOverview } from './business-overview';
 
 export const metadata: Metadata = {
@@ -17,6 +17,11 @@ export default function BusinessPage({ params }: { params: Promise<{ businessId:
 }
 
 async function CurrentBusiness({ params }: { params: Promise<{ businessId: string }> }) {
-  const business = await loadBusiness((await params).businessId);
-  return <BusinessOverview business={business} />;
+  const { businessId } = await params;
+  const [business, professionals] = await Promise.all([
+    loadBusiness(businessId),
+    loadProfessionals(businessId),
+  ]);
+  const activeProfessionals = professionals.filter((professional) => professional.active).length;
+  return <BusinessOverview business={business} activeProfessionals={activeProfessionals} />;
 }

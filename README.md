@@ -65,6 +65,14 @@ El módulo `identity` (`apps/api/src/modules/identity`) maneja cuentas y sesione
 - Teléfonos en formato internacional (E.164); en la web se muestran como en Ecuador.
 - Web: `/panel/negocios/nuevo`, `/panel/negocios/{id}` y `/panel/negocios/{id}/datos`.
 
+## Profesionales
+
+- Rutas en `/businesses/:businessId/professionals`: listar, crear, ver, editar (`PUT`) y `POST …/:id/deactivate` / `…/activate`. Ver: cualquier miembro; cambiar: dueño o administrador.
+- Nunca se borran: se desactivan. Hasta 5 activos por negocio (`MAX_ACTIVE_PROFESSIONALS`); el conteo bloquea la fila del negocio para que dos pedidos simultáneos no pasen el límite.
+- Nombres únicos entre los activos de un negocio (sin distinguir mayúsculas), con índice único parcial en la base.
+- Color de una paleta fija con contraste AA para las iniciales (`PROFESSIONAL_COLORS` en `packages/shared`).
+- Web: `/panel/negocios/{id}/profesionales`, `…/nuevo` y `…/{profesionalId}`.
+
 Si cambias el script de roles, recrea el volumen con `docker compose down -v` (borra los datos locales).
 
 ## Scripts

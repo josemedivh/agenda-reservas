@@ -1,0 +1,109 @@
+.avatar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.previewRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.colorField {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.swatchOption {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--touch-target);
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 10px;
+  background: var(--color-surface);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.swatchOption:has(.swatchInput:checked) {
+  border-color: var(--color-ink);
+  box-shadow: inset 0 0 0 1px var(--color-ink);
+  font-weight: 600;
+}
+
+.swatchOption:has(.swatchInput:focus-visible) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Visually hidden but still focusable and announced. */
+.swatchInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.swatch {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgb(21 33 43 / 15%);
+}
+
+.statusAction {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dangerButton,
+.secondaryButton {
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: var(--color-surface);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dangerButton {
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+.secondaryButton {
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+}
+
+.dangerButton:disabled,
+.secondaryButton:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
