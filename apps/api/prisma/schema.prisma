@@ -109,9 +109,10 @@ model Professional {
   createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  business Business              @relation(fields: [businessId], references: [id], onDelete: Restrict)
-  user     User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
-  services ServiceProfessional[]
+  business     Business              @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  user         User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+  services     ServiceProfessional[]
+  workingHours WorkingHours[]
 
   // Target of (professional_id, business_id) references: assignments cannot cross businesses.
   @@unique([id, businessId], map: "professionals_id_business_id_key")
@@ -153,4 +154,23 @@ model ServiceProfessional {
   @@id([serviceId, professionalId])
   @@index([professionalId])
   @@map("service_professionals")
+}
+
+// Weekly working ranges of a professional, in the business's local time (minutes since
+// midnight, end exclusive). A day can have several ranges (e.g. 9:00–13:00 and 15:00–19:00).
+model WorkingHours {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId     String   @map("business_id") @db.Uuid
+  professionalId String   @map("professional_id") @db.Uuid
+  // ISO weekday: 1 = Monday … 7 = Sunday.
+  weekday        Int
+  startMinute    Int      @map("start_minute")
+  endMinute      Int      @map("end_minute")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  professional Professional @relation(fields: [professionalId, businessId], references: [id, businessId], onDelete: Restrict)
+
+  @@index([professionalId])
+  @@index([businessId])
+  @@map("working_hours")
 }

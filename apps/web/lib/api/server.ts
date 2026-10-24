@@ -3,7 +3,9 @@ import {
   type BusinessDetails,
   type CurrentUserResponse,
   type Professional,
+  type ProfessionalSchedule,
   type Service,
+  type WeeklySchedule,
 } from '@turnero/shared';
 import { cookies } from 'next/headers';
 
@@ -63,5 +65,20 @@ export function fetchServices(businessId: string): Promise<ApiResult<Service[]>>
 export function fetchService(businessId: string, serviceId: string): Promise<ApiResult<Service>> {
   return getFromApi<Service>(
     `/businesses/${encodeURIComponent(businessId)}/services/${encodeURIComponent(serviceId)}`,
+  );
+}
+
+export function fetchWorkingHours(businessId: string): Promise<ApiResult<ProfessionalSchedule[]>> {
+  return getFromApi<ProfessionalSchedule[]>(
+    `/businesses/${encodeURIComponent(businessId)}/working-hours`,
+  );
+}
+
+export function fetchProfessionalWorkingHours(
+  businessId: string,
+  professionalId: string,
+): Promise<ApiResult<WeeklySchedule>> {
+  return getFromApi<WeeklySchedule>(
+    `/businesses/${encodeURIComponent(businessId)}/professionals/${encodeURIComponent(professionalId)}/working-hours`,
   );
 }

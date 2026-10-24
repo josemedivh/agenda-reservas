@@ -80,6 +80,14 @@ El módulo `identity` (`apps/api/src/modules/identity`) maneja cuentas y sesione
 - `service_professionals` asigna quién hace cada servicio. Las llaves foráneas compuestas `(id, business_id)` impiden asignar profesionales de otro negocio. Solo se asignan profesionales activos; una asignación existente se conserva si el profesional se desactiva.
 - Web: `/panel/negocios/{id}/servicios`, `…/nuevo` y `…/{servicioId}`.
 
+## Horarios de trabajo
+
+- Módulo `schedules`. `GET /businesses/:businessId/working-hours` (todos los profesionales) y `GET`/`PUT /businesses/:businessId/professionals/:professionalId/working-hours` (el `PUT` reemplaza la semana completa).
+- Cada turno es un día (1 = lunes … 7 = domingo) y un rango en minutos desde la medianoche en hora local del negocio (9:00 = 540; el fin no se incluye). Varios turnos por día; sin turnos que crucen la medianoche.
+- La base impide turnos cruzados del mismo profesional y día con una restricción de exclusión (`btree_gist`), además de la validación en `packages/shared`.
+- `schedules` pregunta al catálogo si un profesional existe a través de su caso de uso exportado (`GetProfessional`), sin leer sus tablas.
+- Web: `/panel/negocios/{id}/horarios` y el editor semanal en `…/horarios/{profesionalId}`.
+
 Si cambias el script de roles, recrea el volumen con `docker compose down -v` (borra los datos locales).
 
 ## Scripts

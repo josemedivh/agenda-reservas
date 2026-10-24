@@ -1,11 +1,19 @@
-import type { BusinessDetails, Professional, Service } from '@turnero/shared';
+import type {
+  BusinessDetails,
+  Professional,
+  ProfessionalSchedule,
+  Service,
+  WeeklySchedule,
+} from '@turnero/shared';
 import { notFound, redirect } from 'next/navigation';
 import {
   fetchBusiness,
   fetchProfessional,
   fetchProfessionals,
+  fetchProfessionalWorkingHours,
   fetchService,
   fetchServices,
+  fetchWorkingHours,
   type ApiResult,
 } from '../../../lib/api/server';
 
@@ -42,4 +50,15 @@ export async function loadServices(businessId: string): Promise<Service[]> {
 
 export async function loadService(businessId: string, serviceId: string): Promise<Service> {
   return unwrap(await fetchService(businessId, serviceId));
+}
+
+export async function loadWorkingHours(businessId: string): Promise<ProfessionalSchedule[]> {
+  return unwrap(await fetchWorkingHours(businessId));
+}
+
+export async function loadProfessionalWorkingHours(
+  businessId: string,
+  professionalId: string,
+): Promise<WeeklySchedule> {
+  return unwrap(await fetchProfessionalWorkingHours(businessId, professionalId));
 }

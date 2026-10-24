@@ -12,14 +12,32 @@ function activeSummary(count: number): string {
 }
 
 /** Steps to get the business ready for bookings; later steps arrive with their features. */
+function schedulesSummary(activeProfessionals: number, withSchedule: number): string {
+  if (activeProfessionals === 0) {
+    return 'Primero agrega profesionales';
+  }
+  return `${String(withSchedule)} de ${String(activeProfessionals)} con horario`;
+}
+
+/** Steps to get the business ready for bookings. */
 function SetupGuide(props: {
   businessId: string;
   activeProfessionals: number;
   activeServices: number;
+  professionalsWithSchedule: number;
 }) {
   const steps = [
-    { name: '1. Profesionales', path: 'profesionales', count: props.activeProfessionals },
-    { name: '2. Servicios', path: 'servicios', count: props.activeServices },
+    {
+      name: '1. Profesionales',
+      path: 'profesionales',
+      summary: activeSummary(props.activeProfessionals),
+    },
+    { name: '2. Servicios', path: 'servicios', summary: activeSummary(props.activeServices) },
+    {
+      name: '3. Horarios',
+      path: 'horarios',
+      summary: schedulesSummary(props.activeProfessionals, props.professionalsWithSchedule),
+    },
   ];
   return (
     <section className={styles.section} aria-labelledby="configura">
@@ -34,14 +52,10 @@ function SetupGuide(props: {
               className={[styles.card, styles.cardLink].join(' ')}
             >
               <span className={styles.businessName}>{step.name}</span>
-              <span className={styles.muted}>{activeSummary(step.count)}</span>
+              <span className={styles.muted}>{step.summary}</span>
             </Link>
           </li>
         ))}
-        <li className={styles.card}>
-          <span className={styles.businessName}>3. Horarios</span>
-          <span className={styles.muted}>Próximamente</span>
-        </li>
       </ol>
     </section>
   );
@@ -51,6 +65,7 @@ export function BusinessOverview(props: {
   business: BusinessDetails;
   activeProfessionals: number;
   activeServices: number;
+  professionalsWithSchedule: number;
 }) {
   const { business } = props;
   return (
@@ -63,6 +78,7 @@ export function BusinessOverview(props: {
         businessId={business.id}
         activeProfessionals={props.activeProfessionals}
         activeServices={props.activeServices}
+        professionalsWithSchedule={props.professionalsWithSchedule}
       />
       <section className={styles.card} aria-labelledby="datos">
         <h2 id="datos" className={styles.sectionTitle}>
