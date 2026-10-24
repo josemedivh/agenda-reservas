@@ -1,15 +1,13 @@
 import { randomUUID } from 'node:crypto';
-import type { Server } from 'node:http';
 import { Controller, Get, Module, UseGuards } from '@nestjs/common';
-import type { NestExpressApplication } from '@nestjs/platform-express';
-import { Test } from '@nestjs/testing';
 import type { MembershipSummary } from '@turnero/shared';
 import request, { type Response } from 'supertest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { configureApp } from '../../../app.setup.js';
-import { AppModule } from '../../../app.module.js';
-import { PrismaService } from '../../../database/prisma.service.js';
-import { TenantTransactionRunner } from '../../../database/tenant-transaction-runner.js';
+import { beforeAll, describe, expect, it } from 'vitest';
+import {
+  TEST_PASSWORD as PASSWORD,
+  uniqueEmail,
+  useTestApp,
+} from '../../../../test/http-test-app.js';
 import { MemberRole } from '../../../generated/prisma/enums.js';
 import { IdentityModule } from '../identity.module.js';
 import { CryptoSessionTokens } from '../infrastructure/crypto-session-tokens.js';
@@ -31,46 +29,12 @@ class ProbeController {
 @Module({ imports: [IdentityModule], controllers: [ProbeController] })
 class ProbeModule {}
 
-const PASSWORD = 'contraseña-segura';
-
-function uniqueEmail(): string {
-  return `ana-${randomUUID()}@example.test`;
-}
-
 function sessionCookieOf(response: Response): string | undefined {
   return response.get('Set-Cookie')?.find((cookie) => cookie.startsWith(`${SESSION_COOKIE}=`));
 }
 
-/** Boots a fresh app per describe block, so each one has its own rate-limit counters. */
-function useTestApp() {
-  const context = {} as {
-    app: NestExpressApplication;
-    server: Server;
-    prisma: PrismaService;
-    tenants: TenantTransactionRunner;
-  };
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule, ProbeModule],
-    }).compile();
-    context.app = moduleRef.createNestApplication<NestExpressApplication>();
-    configureApp(context.app);
-    await context.app.init();
-    context.server = context.app.getHttpServer();
-    context.prisma = moduleRef.get(PrismaService);
-    context.tenants = moduleRef.get(TenantTransactionRunner);
-  });
-
-  afterAll(async () => {
-    await context.app.close();
-  });
-
-  return context;
-}
-
 describe('POST /auth/register', () => {
-  const ctx = useTestApp();
+  const ctx = useTestApp([ProbeModule]);
 
   it('creates the account, sets an httpOnly session cookie and returns the user', async () => {
     const email = uniqueEmail();
@@ -131,7 +95,7 @@ describe('POST /auth/register', () => {
 });
 
 describe('login, current user and logout', () => {
-  const ctx = useTestApp();
+  const ctx = useTestApp([ProbeModule]);
   const email = uniqueEmail();
 
   beforeAll(async () => {
@@ -198,7 +162,7 @@ describe('login, current user and logout', () => {
 });
 
 describe('business access', () => {
-  const ctx = useTestApp();
+  const ctx = useTestApp([ProbeModule]);
   const ownBusinessId = randomUUID();
   const otherBusinessId = randomUUID();
   const agent = () => request.agent(ctx.server);
@@ -211,6 +175,7 @@ describe('business access', () => {
           id: businessId,
           name,
           slug: `negocio-${businessId}`,
+          phone: '+593991234567',
           timeZone: 'America/Guayaquil',
         },
       });
@@ -267,7 +232,7 @@ describe('business access', () => {
 });
 
 describe('rate limiting', () => {
-  const ctx = useTestApp();
+  const ctx = useTestApp([ProbeModule]);
 
   it('blocks the 11th login attempt within a minute', async () => {
     const credentials = { email: uniqueEmail(), password: PASSWORD };
@@ -284,7 +249,7 @@ describe('rate limiting', () => {
 });
 
 describe('rate limiting behind the web app', () => {
-  const ctx = useTestApp();
+  const ctx = useTestApp([ProbeModule]);
 
   // The web app forwards /api/* from the same machine and adds X-Forwarded-For.
   it('counts attempts per client IP, not per forwarding proxy', async () => {

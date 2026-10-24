@@ -15,7 +15,17 @@ export function stubFetch() {
   return fetchMock;
 }
 
-export function sentJson(fetchMock: ReturnType<typeof stubFetch>): unknown {
-  const init = fetchMock.mock.calls[0]?.[1];
+export function jsonBody(init: RequestInit | undefined): unknown {
   return JSON.parse(typeof init?.body === 'string' ? init.body : 'null');
+}
+
+export function sentJson(fetchMock: ReturnType<typeof stubFetch>): unknown {
+  return jsonBody(fetchMock.mock.calls[0]?.[1]);
+}
+
+export function urlOf(input: RequestInfo | URL): string {
+  if (typeof input === 'string') {
+    return input;
+  }
+  return input instanceof URL ? input.href : input.url;
 }

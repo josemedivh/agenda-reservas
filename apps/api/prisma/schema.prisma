@@ -33,7 +33,8 @@ model Business {
   id        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name      String
   slug      String         @unique
-  phone     String?
+  // E.164, e.g. +593991234567.
+  phone     String
   address   String?
   logoUrl   String?        @map("logo_url")
   timeZone  String         @map("time_zone")

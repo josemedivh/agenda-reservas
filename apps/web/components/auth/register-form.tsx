@@ -1,14 +1,18 @@
 'use client';
 
 import { PASSWORD_MIN_LENGTH, registerSchema } from '@turnero/shared';
-import styles from './auth-form.module.css';
-import { FormAlert, PasswordField, SubmitButton, TextField } from './fields';
-import { useAuthForm } from './use-auth-form';
+import styles from '../forms/form.module.css';
+import { FormAlert, PasswordField, SubmitButton, TextField } from '../forms/fields';
+import { postToApi } from '../../lib/api/client';
+import { useApiForm } from '../forms/use-api-form';
 
 export function RegisterForm() {
-  const { fieldErrors, formError, pending, handleSubmit } = useAuthForm(
+  const { fieldErrors, formError, pending, handleSubmit } = useApiForm(
     registerSchema,
-    '/auth/register',
+    async (data) => {
+      await postToApi('/auth/register', data);
+      return '/panel';
+    },
   );
 
   return (

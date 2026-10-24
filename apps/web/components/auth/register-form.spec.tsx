@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { RegisterForm } from './register-form';
-import { jsonResponse, sentJson, stubFetch } from './test-helpers';
+import { jsonResponse, sentJson, stubFetch } from '../forms/test-helpers';
 
 const router = vi.hoisted(() => ({ replace: vi.fn(), refresh: vi.fn() }));
 vi.mock('next/navigation', () => ({ useRouter: () => router }));

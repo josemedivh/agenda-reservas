@@ -28,6 +28,7 @@ describe('Row level security by business', () => {
           id: businessId,
           name: 'Barbería El Faro',
           slug: `barberia-${businessId}`,
+          phone: '+593991234567',
           timeZone: 'America/Guayaquil',
         },
       });

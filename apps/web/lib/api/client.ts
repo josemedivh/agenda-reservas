@@ -7,6 +7,7 @@ export class ApiError extends Error {
     readonly status: number,
     message: string,
     readonly fieldErrors: ApiErrorResponse['fieldErrors'] = {},
+    readonly suggestion: string | null = null,
   ) {
     super(message);
     this.name = 'ApiError';
@@ -16,21 +17,30 @@ export class ApiError extends Error {
 async function readError(response: Response): Promise<ApiError> {
   try {
     const body = (await response.json()) as Partial<ApiErrorResponse>;
-    return new ApiError(response.status, body.message ?? UNEXPECTED_ERROR, body.fieldErrors);
+    return new ApiError(
+      response.status,
+      body.message ?? UNEXPECTED_ERROR,
+      body.fieldErrors,
+      body.suggestion ?? null,
+    );
   } catch {
     return new ApiError(response.status, UNEXPECTED_ERROR);
   }
 }
 
 /**
- * POSTs JSON to the API through the web app's /api rewrite (same origin, so the session
- * cookie is sent and stored automatically). Throws ApiError on non-2xx responses.
+ * Calls the API through the web app's /api rewrite (same origin, so the session cookie is
+ * sent and stored automatically). Throws ApiError on non-2xx responses.
  */
-export async function postToApi<T = undefined>(path: string, body?: unknown): Promise<T> {
+export async function requestApi<T = undefined>(
+  method: 'GET' | 'POST' | 'PUT',
+  path: string,
+  body?: unknown,
+): Promise<T> {
   const response = await fetch(`/api${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body ?? {}),
+    method,
+    headers: method === 'GET' ? undefined : { 'Content-Type': 'application/json' },
+    body: method === 'GET' ? undefined : JSON.stringify(body ?? {}),
   });
   if (!response.ok) {
     throw await readError(response);
@@ -39,4 +49,8 @@ export async function postToApi<T = undefined>(path: string, body?: unknown): Pr
     return undefined as T;
   }
   return (await response.json()) as T;
+}
+
+export function postToApi<T = undefined>(path: string, body?: unknown): Promise<T> {
+  return requestApi<T>('POST', path, body);
 }

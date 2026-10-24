@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { stubFetch } from '../../components/auth/test-helpers';
+import { stubFetch } from '../../components/forms/test-helpers';
 import { LogoutButton } from './logout-button';
 
 const router = vi.hoisted(() => ({ replace: vi.fn(), refresh: vi.fn() }));

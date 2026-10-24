@@ -11,11 +11,9 @@ export const metadata: Metadata = {
 
 export default function PanelPage() {
   return (
-    <main className={styles.page}>
-      <Suspense fallback={<p className={styles.loading}>Cargando tu panel…</p>}>
-        <CurrentPanel />
-      </Suspense>
-    </main>
+    <Suspense fallback={<p className={styles.muted}>Cargando tu panel…</p>}>
+      <CurrentPanel />
+    </Suspense>
   );
 }
 

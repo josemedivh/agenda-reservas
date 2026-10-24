@@ -1,26 +1,42 @@
-import { SESSION_COOKIE_NAME, type CurrentUserResponse } from '@turnero/shared';
+import {
+  SESSION_COOKIE_NAME,
+  type BusinessDetails,
+  type CurrentUserResponse,
+} from '@turnero/shared';
 import { cookies } from 'next/headers';
 
 const apiUrl = process.env.API_INTERNAL_URL ?? 'http://localhost:3001';
 
+export type ApiResult<T> = { ok: true; data: T } | { ok: false; status: number };
+
 /**
- * Server-side: the signed-in user, or null when there is no valid session.
- * Calls the API directly, forwarding only the session cookie.
+ * Server-side GET to the API, forwarding only the session cookie. Error statuses are returned
+ * so each page decides (401: session ended, 403/404: not found); anything else throws.
  */
-export async function fetchCurrentUser(): Promise<CurrentUserResponse | null> {
+async function getFromApi<T>(path: string): Promise<ApiResult<T>> {
   const session = (await cookies()).get(SESSION_COOKIE_NAME);
   if (!session) {
-    return null;
+    return { ok: false, status: 401 };
   }
-  const response = await fetch(`${apiUrl}/auth/me`, {
+  const response = await fetch(`${apiUrl}${path}`, {
     headers: { cookie: `${SESSION_COOKIE_NAME}=${session.value}` },
     cache: 'no-store',
   });
-  if (response.status === 401) {
-    return null;
+  if ([401, 403, 404].includes(response.status)) {
+    return { ok: false, status: response.status };
   }
   if (!response.ok) {
-    throw new Error(`GET /auth/me failed with status ${String(response.status)}`);
+    throw new Error(`GET ${path} failed with status ${String(response.status)}`);
   }
-  return (await response.json()) as CurrentUserResponse;
+  return { ok: true, data: (await response.json()) as T };
+}
+
+/** The signed-in user, or null when there is no valid session. */
+export async function fetchCurrentUser(): Promise<CurrentUserResponse | null> {
+  const result = await getFromApi<CurrentUserResponse>('/auth/me');
+  return result.ok ? result.data : null;
+}
+
+export function fetchBusiness(businessId: string): Promise<ApiResult<BusinessDetails>> {
+  return getFromApi<BusinessDetails>(`/businesses/${encodeURIComponent(businessId)}`);
 }

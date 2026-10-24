@@ -1,7 +1,13 @@
 'use client';
 
-import { useId, useState, type InputHTMLAttributes, type ReactNode } from 'react';
-import styles from './auth-form.module.css';
+import {
+  useId,
+  useState,
+  type InputHTMLAttributes,
+  type ReactNode,
+  type SelectHTMLAttributes,
+} from 'react';
+import styles from './form.module.css';
 
 type InputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -109,6 +115,47 @@ export function PasswordField({
           {visible ? 'Ocultar' : 'Mostrar'}
         </button>
       </div>
+    </FieldShell>
+  );
+}
+
+type SelectProps = Omit<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  'id' | 'name' | 'className' | 'aria-invalid' | 'aria-describedby'
+>;
+
+interface SelectFieldProps extends SelectProps {
+  name: string;
+  label: string;
+  options: readonly { value: string; label: string }[];
+  hint?: string;
+  error?: string;
+}
+
+export function SelectField({
+  name,
+  label,
+  options,
+  hint,
+  error,
+  ...selectProps
+}: SelectFieldProps) {
+  const ids = useFieldIds();
+  return (
+    <FieldShell ids={ids} label={label} hint={hint} error={error}>
+      <select
+        {...selectProps}
+        id={ids.input}
+        name={name}
+        className={styles.input}
+        {...describedBy(ids, hint, error)}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
     </FieldShell>
   );
 }

@@ -13,9 +13,18 @@
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  color: #ffffff;
   font-family: var(--font-heading);
   font-size: 1.25rem;
   font-weight: 700;
+  text-decoration: none;
+}
+
+.brand:focus-visible {
+  outline-color: var(--color-accent-on-dark);
 }
 
 .logout {
@@ -42,12 +51,18 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 24px 16px;
+  padding: 24px 16px 40px;
 }
 
 .title {
   margin: 0;
   font-size: 1.75rem;
+  overflow-wrap: anywhere;
+}
+
+.lead {
+  margin: -16px 0 0;
+  color: var(--color-muted);
 }
 
 .section {
@@ -85,20 +100,80 @@
   background: var(--color-surface);
 }
 
-.businessName,
-.emptyTitle {
+.cardLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cardLink:hover {
+  border-color: var(--color-accent);
+}
+
+.businessName {
   margin: 0;
   font-weight: 600;
 }
 
-.role,
 .muted {
   margin: 0;
   color: var(--color-muted);
   font-size: 14px;
 }
 
-.loading {
-  padding: 24px 16px;
+.primaryAction,
+.secondaryAction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.primaryAction {
+  margin-top: 12px;
+  background: var(--color-accent);
+  color: #ffffff;
+}
+
+.secondaryAction {
+  border: 1px solid var(--color-accent);
+  background: var(--color-surface);
+  color: var(--color-accent);
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-height: var(--touch-target);
+  margin: -12px 0 -12px;
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.details {
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.details div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.details dt {
   color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
 }

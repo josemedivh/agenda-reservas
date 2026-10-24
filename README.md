@@ -58,6 +58,13 @@ El módulo `identity` (`apps/api/src/modules/identity`) maneja cuentas y sesione
 - `apps/web/proxy.ts` redirige según exista la cookie; la validación real la hace `/panel` con `GET /auth/me`. Una sesión inválida pasa por `/sesion/caducada`, que borra la cookie.
 - La API confía en `X-Forwarded-For` solo desde `TRUST_PROXY` (por defecto loopback), para que el límite de intentos cuente por visitante.
 
+## Negocios
+
+- `POST /businesses` crea el negocio y deja al usuario como dueño; `GET`/`PUT /businesses/:businessId` lo muestran y editan (editar: dueño o administrador). `GET /businesses/slug-availability?slug=` dice si un link está libre y sugiere otro.
+- El link público (`slug`) se arma con el nombre, no se puede cambiar después y no puede usar palabras reservadas (`RESERVED_SLUGS` en `packages/shared`). Las mismas reglas valen en la web, la API y la base (`CHECK`).
+- Teléfonos en formato internacional (E.164); en la web se muestran como en Ecuador.
+- Web: `/panel/negocios/nuevo`, `/panel/negocios/{id}` y `/panel/negocios/{id}/datos`.
+
 Si cambias el script de roles, recrea el volumen con `docker compose down -v` (borra los datos locales).
 
 ## Scripts

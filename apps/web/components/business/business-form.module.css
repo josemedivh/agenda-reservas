@@ -1,0 +1,53 @@
+.slugGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.available,
+.taken {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.available:empty,
+.taken:empty {
+  display: none;
+}
+
+.available {
+  color: var(--color-accent);
+}
+
+.taken {
+  color: var(--color-danger);
+}
+
+.suggestion {
+  align-self: flex-start;
+  min-height: var(--touch-target);
+  padding: 0 14px;
+  border: 1px solid var(--color-accent);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-accent);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fixedLink {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fixedLinkValue {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--color-bg);
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}

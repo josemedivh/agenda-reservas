@@ -7,4 +7,6 @@ export interface ApiErrorResponse {
   message: string;
   /** Present on validation errors (400): messages per field. */
   fieldErrors?: Partial<Record<string, string[]>>;
+  /** Present when a public link is taken (409): a free alternative, if one was found. */
+  suggestion?: string | null;
 }

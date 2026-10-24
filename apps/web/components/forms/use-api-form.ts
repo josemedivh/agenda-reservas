@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState, type SubmitEvent } from 'react';
 import { z, type ZodType } from 'zod';
-import { ApiError, postToApi } from '../../lib/api/client';
+import { ApiError } from '../../lib/api/client';
 
 export type FieldErrors = Partial<Record<string, string>>;
 
@@ -28,13 +28,15 @@ function focusField(form: HTMLFormElement, name: string | undefined): void {
 }
 
 /**
- * Validates the form with a shared zod schema, posts it to the API and opens the panel.
- * Field errors (from the schema or the API) go next to each field; others go to formError.
+ * Validates the form with a shared zod schema, sends it with `send` and navigates to the path
+ * `send` returns. Field errors (from the schema or the API) go next to each field; others go
+ * to formError.
  */
-export function useAuthForm<T>(schema: ZodType<T>, endpoint: string) {
+export function useApiForm<T>(schema: ZodType<T>, send: (data: T) => Promise<string>) {
   const router = useRouter();
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<ApiError | null>(null);
   const [pending, setPending] = useState(false);
 
   function showFieldErrors(form: HTMLFormElement, errors: FieldErrors): void {
@@ -44,6 +46,7 @@ export function useAuthForm<T>(schema: ZodType<T>, endpoint: string) {
 
   async function submit(form: HTMLFormElement): Promise<void> {
     setFormError(null);
+    setApiError(null);
     const parsed = schema.safeParse(Object.fromEntries(new FormData(form)));
     if (!parsed.success) {
       showFieldErrors(form, firstMessages(z.flattenError(parsed.error).fieldErrors));
@@ -53,8 +56,8 @@ export function useAuthForm<T>(schema: ZodType<T>, endpoint: string) {
     setFieldErrors({});
     setPending(true);
     try {
-      await postToApi(endpoint, parsed.data);
-      router.replace('/panel');
+      const destination = await send(parsed.data);
+      router.replace(destination);
       router.refresh();
       // Next keeps this page mounted while hidden: leave it empty and ready for next time.
       form.reset();
@@ -62,6 +65,7 @@ export function useAuthForm<T>(schema: ZodType<T>, endpoint: string) {
     } catch (error) {
       setPending(false);
       if (error instanceof ApiError) {
+        setApiError(error);
         showFieldErrors(form, firstMessages(error.fieldErrors));
         setFormError(error.message);
       } else {
@@ -75,5 +79,9 @@ export function useAuthForm<T>(schema: ZodType<T>, endpoint: string) {
     void submit(event.currentTarget);
   }
 
-  return { fieldErrors, formError, pending, handleSubmit };
+  function clearFieldError(field: string): void {
+    setFieldErrors((current) => ({ ...current, [field]: undefined }));
+  }
+
+  return { fieldErrors, formError, apiError, pending, handleSubmit, clearFieldError };
 }

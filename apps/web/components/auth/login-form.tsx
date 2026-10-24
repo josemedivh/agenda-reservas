@@ -1,12 +1,19 @@
 'use client';
 
 import { loginSchema } from '@turnero/shared';
-import styles from './auth-form.module.css';
-import { FormAlert, PasswordField, SubmitButton, TextField } from './fields';
-import { useAuthForm } from './use-auth-form';
+import styles from '../forms/form.module.css';
+import { FormAlert, PasswordField, SubmitButton, TextField } from '../forms/fields';
+import { postToApi } from '../../lib/api/client';
+import { useApiForm } from '../forms/use-api-form';
 
 export function LoginForm() {
-  const { fieldErrors, formError, pending, handleSubmit } = useAuthForm(loginSchema, '/auth/login');
+  const { fieldErrors, formError, pending, handleSubmit } = useApiForm(
+    loginSchema,
+    async (data) => {
+      await postToApi('/auth/login', data);
+      return '/panel';
+    },
+  );
 
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
