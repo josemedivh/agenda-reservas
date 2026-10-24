@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Server } from 'node:http';
-import { Controller, Get, Module, UseGuards, type INestApplication } from '@nestjs/common';
+import { Controller, Get, Module, UseGuards } from '@nestjs/common';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import type { MembershipSummary } from '@turnero/shared';
 import request, { type Response } from 'supertest';
@@ -43,7 +44,7 @@ function sessionCookieOf(response: Response): string | undefined {
 /** Boots a fresh app per describe block, so each one has its own rate-limit counters. */
 function useTestApp() {
   const context = {} as {
-    app: INestApplication<Server>;
+    app: NestExpressApplication;
     server: Server;
     prisma: PrismaService;
     tenants: TenantTransactionRunner;
@@ -53,7 +54,7 @@ function useTestApp() {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, ProbeModule],
     }).compile();
-    context.app = moduleRef.createNestApplication<INestApplication<Server>>();
+    context.app = moduleRef.createNestApplication<NestExpressApplication>();
     configureApp(context.app);
     await context.app.init();
     context.server = context.app.getHttpServer();
@@ -279,5 +280,22 @@ describe('rate limiting', () => {
     expect(response.body).toMatchObject({
       message: 'Demasiados intentos. Espera un minuto y vuelve a intentarlo.',
     });
+  });
+});
+
+describe('rate limiting behind the web app', () => {
+  const ctx = useTestApp();
+
+  // The web app forwards /api/* from the same machine and adds X-Forwarded-For.
+  it('counts attempts per client IP, not per forwarding proxy', async () => {
+    const credentials = { email: uniqueEmail(), password: PASSWORD };
+    const loginFrom = (ip: string) =>
+      request(ctx.server).post('/auth/login').set('X-Forwarded-For', ip).send(credentials);
+    for (let attempt = 1; attempt <= 10; attempt += 1) {
+      await loginFrom('203.0.113.10').expect(401);
+    }
+
+    await loginFrom('203.0.113.10').expect(429);
+    await loginFrom('203.0.113.20').expect(401);
   });
 });

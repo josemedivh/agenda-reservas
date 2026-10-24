@@ -51,6 +51,13 @@ El módulo `identity` (`apps/api/src/modules/identity`) maneja cuentas y sesione
 - Contraseñas con Argon2id. Login y registro tienen límite de 10 intentos por minuto.
 - Para proteger una ruta: `@UseGuards(SessionGuard)`. Para rutas de un negocio (`/businesses/:businessId/...`): `@UseGuards(SessionGuard, BusinessMemberGuard)` y `@CurrentMembership()` para obtener el negocio y el rol.
 
+## Web: registro, ingreso y panel
+
+- Páginas: `/registro`, `/ingresar` y `/panel` (protegida).
+- El navegador solo habla con la web: `/api/*` se reenvía a la API (`rewrites` en `apps/web/next.config.ts`, destino `API_INTERNAL_URL`). Así la cookie de sesión pertenece al dominio de la web y el servidor de Next puede leerla.
+- `apps/web/proxy.ts` redirige según exista la cookie; la validación real la hace `/panel` con `GET /auth/me`. Una sesión inválida pasa por `/sesion/caducada`, que borra la cookie.
+- La API confía en `X-Forwarded-For` solo desde `TRUST_PROXY` (por defecto loopback), para que el límite de intentos cuente por visitante.
+
 Si cambias el script de roles, recrea el volumen con `docker compose down -v` (borra los datos locales).
 
 ## Scripts

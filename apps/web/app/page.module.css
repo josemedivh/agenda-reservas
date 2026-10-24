@@ -1,18 +1,49 @@
 .main {
   min-height: 100dvh;
+  max-width: 420px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 8px;
-  padding: 24px 20px;
+  gap: 12px;
+  padding: 24px 16px;
 }
 
 .title {
   margin: 0;
-  font-size: 2rem;
+  font-size: 2.5rem;
 }
 
 .lead {
   margin: 0;
   color: var(--color-muted);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.primary,
+.secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.primary {
+  background: var(--color-accent);
+  color: #ffffff;
+}
+
+.secondary {
+  border: 1px solid var(--color-accent);
+  background: var(--color-surface);
+  color: var(--color-accent);
 }

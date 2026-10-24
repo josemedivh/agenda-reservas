@@ -6,10 +6,12 @@
   --color-ink-soft: #1f2d39;
   --color-muted: #56646f;
   --color-border: #d3dae0;
+  --color-border-strong: #c3ccd3;
   --color-accent: #0e5a4c;
   --color-accent-soft: #e2eeea;
   --color-accent-on-dark: #a9c9c0;
   --color-danger: #a1261b;
+  --color-danger-soft: #fbe3e0;
   --color-focus: #2f7fd1;
 
   --font-heading: var(--font-archivo-narrow), system-ui, sans-serif;

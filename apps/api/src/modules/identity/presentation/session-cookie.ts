@@ -1,7 +1,8 @@
+import { SESSION_COOKIE_NAME } from '@turnero/shared';
 import type { CookieOptions, Request, Response } from 'express';
 import type { StartedSession } from '../application/start-session.js';
 
-export const SESSION_COOKIE = 'turnero_session';
+export const SESSION_COOKIE = SESSION_COOKIE_NAME;
 
 // httpOnly keeps the token away from JavaScript; SameSite=Lax blocks cross-site POSTs.
 function sessionCookieOptions(): CookieOptions {
