@@ -8,6 +8,8 @@ import {
   ProfessionalLimitReachedError,
   ProfessionalNameTakenError,
   ProfessionalNotFoundError,
+  ServiceNameTakenError,
+  ServiceNotFoundError,
 } from '../domain/errors.js';
 
 function toResponse(error: CatalogError): ApiErrorResponse {
@@ -18,7 +20,7 @@ function toResponse(error: CatalogError): ApiErrorResponse {
       fieldErrors: { [error.field]: [error.message] },
     };
   }
-  if (error instanceof ProfessionalNameTakenError) {
+  if (error instanceof ProfessionalNameTakenError || error instanceof ServiceNameTakenError) {
     return {
       statusCode: HttpStatus.CONFLICT,
       message: error.message,
@@ -31,7 +33,7 @@ function toResponse(error: CatalogError): ApiErrorResponse {
   if (error instanceof CatalogEditForbiddenError) {
     return { statusCode: HttpStatus.FORBIDDEN, message: error.message };
   }
-  if (error instanceof ProfessionalNotFoundError) {
+  if (error instanceof ProfessionalNotFoundError || error instanceof ServiceNotFoundError) {
     return { statusCode: HttpStatus.NOT_FOUND, message: error.message };
   }
   return { statusCode: HttpStatus.BAD_REQUEST, message: error.message };

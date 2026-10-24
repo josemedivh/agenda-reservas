@@ -26,6 +26,10 @@ export default defineConfig({
           include: ['src/**/*.int-spec.ts'],
           globalSetup: ['./test/integration-global-setup.ts'],
           fileParallelism: false,
+          // Hooks boot the whole app and hash passwords (Argon2), which can take more than the
+          // default 10 s when other packages' tests run in parallel on the same machine.
+          hookTimeout: 30_000,
+          testTimeout: 15_000,
         },
       },
     ],

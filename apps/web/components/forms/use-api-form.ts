@@ -20,6 +20,23 @@ function firstMessages(errors: Partial<Record<string, string[]>> | undefined): F
   return result;
 }
 
+/** Form values by name; names that appear several times (checkboxes) become arrays. */
+function formValues(form: HTMLFormElement): Record<string, string | string[]> {
+  const values: Record<string, string | string[]> = {};
+  for (const [name, value] of new FormData(form)) {
+    if (typeof value !== 'string') {
+      continue;
+    }
+    const previous = values[name];
+    if (previous === undefined) {
+      values[name] = value;
+    } else {
+      values[name] = Array.isArray(previous) ? [...previous, value] : [previous, value];
+    }
+  }
+  return values;
+}
+
 function focusField(form: HTMLFormElement, name: string | undefined): void {
   const field = name ? form.elements.namedItem(name) : null;
   if (field instanceof HTMLElement) {
@@ -47,7 +64,7 @@ export function useApiForm<T>(schema: ZodType<T>, send: (data: T) => Promise<str
   async function submit(form: HTMLFormElement): Promise<void> {
     setFormError(null);
     setApiError(null);
-    const parsed = schema.safeParse(Object.fromEntries(new FormData(form)));
+    const parsed = schema.safeParse(formValues(form));
     if (!parsed.success) {
       showFieldErrors(form, firstMessages(z.flattenError(parsed.error).fieldErrors));
       return;

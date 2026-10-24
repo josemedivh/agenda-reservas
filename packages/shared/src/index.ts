@@ -5,3 +5,4 @@ export * from './auth.js';
 export * from './http.js';
 export * from './business.js';
 export * from './professional.js';
+export * from './service.js';

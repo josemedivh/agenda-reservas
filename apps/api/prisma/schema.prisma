@@ -44,6 +44,7 @@ model Business {
 
   members       Member[]
   professionals Professional[]
+  services      Service[]
 
   @@map("businesses")
 }
@@ -108,9 +109,48 @@ model Professional {
   createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
-  user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  business Business              @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  user     User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+  services ServiceProfessional[]
 
+  // Target of (professional_id, business_id) references: assignments cannot cross businesses.
+  @@unique([id, businessId], map: "professionals_id_business_id_key")
   @@index([businessId])
   @@map("professionals")
+}
+
+// What a business sells. Never deleted: deactivated (active = false) instead.
+model Service {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId      String   @map("business_id") @db.Uuid
+  name            String
+  durationMinutes Int      @map("duration_minutes")
+  // USD cents (integer). Appointments will copy name and price when booked.
+  priceCents      Int      @map("price_cents")
+  // Minutes blocked after the appointment (cleaning, preparation).
+  bufferMinutes   Int      @default(0) @map("buffer_minutes")
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  business      Business              @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  professionals ServiceProfessional[]
+
+  @@unique([id, businessId], map: "services_id_business_id_key")
+  @@index([businessId])
+  @@map("services")
+}
+
+// Which professionals perform which service, always within the same business.
+model ServiceProfessional {
+  businessId     String @map("business_id") @db.Uuid
+  serviceId      String @map("service_id") @db.Uuid
+  professionalId String @map("professional_id") @db.Uuid
+
+  service      Service      @relation(fields: [serviceId, businessId], references: [id, businessId], onDelete: Cascade)
+  professional Professional @relation(fields: [professionalId, businessId], references: [id, businessId], onDelete: Restrict)
+
+  @@id([serviceId, professionalId])
+  @@index([professionalId])
+  @@map("service_professionals")
 }

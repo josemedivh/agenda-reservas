@@ -183,3 +183,30 @@
   align-items: center;
   gap: 12px;
 }
+
+.performers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 6px;
+}
+
+.performer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.performer > span:first-child {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+}
+
+.warning {
+  margin-top: 6px;
+  color: var(--color-danger);
+  font-size: 14px;
+  font-weight: 600;
+}

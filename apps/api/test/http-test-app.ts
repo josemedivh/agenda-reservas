@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Server } from 'node:http';
 import type { Type } from '@nestjs/common';
+import type { BusinessDetails } from '@turnero/shared';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
@@ -59,4 +60,19 @@ export async function signedInAgent(server: Server) {
     .send({ name: 'Ana', email: uniqueEmail(), password: TEST_PASSWORD })
     .expect(201);
   return { agent, userId: (response.body as { user: { id: string } }).user.id };
+}
+
+/** A signed-in owner with a brand-new business (unique link). */
+export async function ownerWithBusiness(server: Server) {
+  const owner = await signedInAgent(server);
+  const response = await owner.agent
+    .post('/businesses')
+    .send({
+      name: 'Barbería El Faro',
+      slug: `barberia-${randomUUID().slice(0, 8)}`,
+      phone: '0991234567',
+      timeZone: 'America/Guayaquil',
+    })
+    .expect(201);
+  return { ...owner, business: response.body as BusinessDetails };
 }

@@ -9,25 +9,24 @@ import styles from './catalog.module.css';
 const NETWORK_ERROR =
   'No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.';
 
-/** Deactivates or reactivates a professional (they are never deleted). */
-export function ProfessionalStatusButton(props: {
-  businessId: string;
-  professionalId: string;
+/**
+ * Deactivates or reactivates a professional or service (they are never deleted).
+ * `resourcePath` is the API path of the item, e.g. /businesses/{id}/services/{serviceId}.
+ */
+export function CatalogStatusButton(props: {
+  resourcePath: string;
+  noun: string;
   active: boolean;
 }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const action = props.active ? 'deactivate' : 'activate';
 
   async function toggle(): Promise<void> {
     setPending(true);
     setError(null);
     try {
-      await requestApi(
-        'POST',
-        `/businesses/${props.businessId}/professionals/${props.professionalId}/${action}`,
-      );
+      await requestApi('POST', `${props.resourcePath}/${props.active ? 'deactivate' : 'activate'}`);
       router.refresh();
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : NETWORK_ERROR);
@@ -35,7 +34,7 @@ export function ProfessionalStatusButton(props: {
     setPending(false);
   }
 
-  let label = props.active ? 'Desactivar profesional' : 'Reactivar profesional';
+  let label = `${props.active ? 'Desactivar' : 'Reactivar'} ${props.noun}`;
   if (pending) {
     label = props.active ? 'Desactivando…' : 'Reactivando…';
   }

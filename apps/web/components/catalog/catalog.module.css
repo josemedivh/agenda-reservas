@@ -107,3 +107,35 @@
   opacity: 0.7;
   cursor: progress;
 }
+
+.checkList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 6px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 10px;
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.checkOption:has(.checkInput:checked) {
+  border-color: var(--color-ink);
+  box-shadow: inset 0 0 0 1px var(--color-ink);
+  font-weight: 600;
+}
+
+.checkInput {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--color-accent);
+}

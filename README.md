@@ -73,6 +73,13 @@ El módulo `identity` (`apps/api/src/modules/identity`) maneja cuentas y sesione
 - Color de una paleta fija con contraste AA para las iniciales (`PROFESSIONAL_COLORS` en `packages/shared`).
 - Web: `/panel/negocios/{id}/profesionales`, `…/nuevo` y `…/{profesionalId}`.
 
+## Servicios
+
+- Rutas en `/businesses/:businessId/services`: listar, crear, ver, editar (`PUT`, reemplaza datos y profesionales) y `POST …/:id/deactivate` / `…/activate`.
+- Duración de 5 a 480 minutos y preparación de 0 a 60, en bloques de 5. Precio en centavos (entero, USD): la web acepta `8`, `8,50` o `8.50` y lo convierte sin decimales de punto flotante (`parsePriceToCents`).
+- `service_professionals` asigna quién hace cada servicio. Las llaves foráneas compuestas `(id, business_id)` impiden asignar profesionales de otro negocio. Solo se asignan profesionales activos; una asignación existente se conserva si el profesional se desactiva.
+- Web: `/panel/negocios/{id}/servicios`, `…/nuevo` y `…/{servicioId}`.
+
 Si cambias el script de roles, recrea el volumen con `docker compose down -v` (borra los datos locales).
 
 ## Scripts

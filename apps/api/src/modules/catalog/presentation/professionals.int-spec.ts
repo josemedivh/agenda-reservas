@@ -1,8 +1,13 @@
 import { randomUUID } from 'node:crypto';
-import type { BusinessDetails, Professional } from '@turnero/shared';
+import type { Professional } from '@turnero/shared';
 import type { Response } from 'supertest';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { signedInAgent, useTestApp, type TestApp } from '../../../../test/http-test-app.js';
+import {
+  ownerWithBusiness as createOwnerWithBusiness,
+  signedInAgent,
+  useTestApp,
+  type TestApp,
+} from '../../../../test/http-test-app.js';
 import { MemberRole } from '../../../generated/prisma/enums.js';
 
 const TEAL = '#0E5A4C';
@@ -10,20 +15,10 @@ const SKY = '#B9D7EE';
 
 type Agent = Awaited<ReturnType<typeof signedInAgent>>;
 
-/** A signed-in owner with a brand-new business. */
+/** A signed-in owner with a new business, plus the professionals route of that business. */
 async function ownerWithBusiness(ctx: TestApp) {
-  const owner = await signedInAgent(ctx.server);
-  const response = await owner.agent
-    .post('/businesses')
-    .send({
-      name: 'Barbería El Faro',
-      slug: `barberia-${randomUUID().slice(0, 8)}`,
-      phone: '0991234567',
-      timeZone: 'America/Guayaquil',
-    })
-    .expect(201);
-  const business = response.body as BusinessDetails;
-  return { ...owner, business, path: `/businesses/${business.id}/professionals` };
+  const owner = await createOwnerWithBusiness(ctx.server);
+  return { ...owner, path: `/businesses/${owner.business.id}/professionals` };
 }
 
 function body(response: Response): Professional {

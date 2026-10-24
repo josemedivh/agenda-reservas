@@ -2,14 +2,14 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { jsonResponse, stubFetch } from '../forms/test-helpers';
-import { ProfessionalStatusButton } from './professional-status-button';
+import { CatalogStatusButton } from './catalog-status-button';
 
 const router = vi.hoisted(() => ({ replace: vi.fn(), refresh: vi.fn() }));
 vi.mock('next/navigation', () => ({ useRouter: () => router }));
 
 const path = '/businesses/business-1/professionals/pro-1';
 
-describe('ProfessionalStatusButton', () => {
+describe('CatalogStatusButton', () => {
   let fetchMock: ReturnType<typeof stubFetch>;
 
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('ProfessionalStatusButton', () => {
   it('deactivates an active professional and refreshes the page', async () => {
     fetchMock.mockResolvedValue(jsonResponse(200, {}));
     const user = userEvent.setup();
-    render(<ProfessionalStatusButton businessId="business-1" professionalId="pro-1" active />);
+    render(<CatalogStatusButton resourcePath={path} noun="profesional" active />);
 
     await user.click(screen.getByRole('button', { name: 'Desactivar profesional' }));
 
@@ -43,9 +43,7 @@ describe('ProfessionalStatusButton', () => {
       }),
     );
     const user = userEvent.setup();
-    render(
-      <ProfessionalStatusButton businessId="business-1" professionalId="pro-1" active={false} />,
-    );
+    render(<CatalogStatusButton resourcePath={path} noun="profesional" active={false} />);
 
     await user.click(screen.getByRole('button', { name: 'Reactivar profesional' }));
 
@@ -53,5 +51,11 @@ describe('ProfessionalStatusButton', () => {
       'Puedes tener hasta 5 profesionales activos. Desactiva uno para agregar otro.',
     );
     expect(router.refresh).not.toHaveBeenCalled();
+  });
+
+  it('names the kind of item in its label', () => {
+    render(<CatalogStatusButton resourcePath="/businesses/b/services/s" noun="servicio" active />);
+
+    expect(screen.getByRole('button', { name: 'Desactivar servicio' })).toBeTruthy();
   });
 });

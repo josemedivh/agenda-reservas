@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { EditProfessionalForm } from '../../../../../../components/catalog/professional-form';
-import { ProfessionalStatusButton } from '../../../../../../components/catalog/professional-status-button';
+import { CatalogStatusButton } from '../../../../../../components/catalog/catalog-status-button';
 import styles from '../../../../panel.module.css';
 import { loadBusiness, loadProfessional } from '../../../load-business';
 
@@ -66,9 +66,9 @@ async function ProfessionalDetail({ params }: { params: Params }) {
             ? 'Si lo desactivas deja de recibir reservas, pero conserva su historial. Puedes reactivarlo cuando quieras.'
             : 'No recibe reservas. Al reactivarlo vuelve a estar disponible.'}
         </p>
-        <ProfessionalStatusButton
-          businessId={business.id}
-          professionalId={professional.id}
+        <CatalogStatusButton
+          resourcePath={`/businesses/${business.id}/professionals/${professional.id}`}
+          noun="profesional"
           active={professional.active}
         />
       </section>

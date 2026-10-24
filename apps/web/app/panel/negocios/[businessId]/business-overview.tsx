@@ -4,7 +4,7 @@ import { formatPhone, ROLE_LABELS, timeZoneLabel } from '../../../../lib/format'
 import { publicBusinessAddress } from '../../../../lib/site';
 import styles from '../../panel.module.css';
 
-function professionalsSummary(count: number): string {
+function activeSummary(count: number): string {
   if (count === 0) {
     return 'Aún no agregas ninguno';
   }
@@ -12,26 +12,32 @@ function professionalsSummary(count: number): string {
 }
 
 /** Steps to get the business ready for bookings; later steps arrive with their features. */
-function SetupGuide(props: { businessId: string; activeProfessionals: number }) {
+function SetupGuide(props: {
+  businessId: string;
+  activeProfessionals: number;
+  activeServices: number;
+}) {
+  const steps = [
+    { name: '1. Profesionales', path: 'profesionales', count: props.activeProfessionals },
+    { name: '2. Servicios', path: 'servicios', count: props.activeServices },
+  ];
   return (
     <section className={styles.section} aria-labelledby="configura">
       <h2 id="configura" className={styles.sectionTitle}>
         Configura tu negocio
       </h2>
       <ol className={styles.list}>
-        <li>
-          <Link
-            href={`/panel/negocios/${props.businessId}/profesionales`}
-            className={[styles.card, styles.cardLink].join(' ')}
-          >
-            <span className={styles.businessName}>1. Profesionales</span>
-            <span className={styles.muted}>{professionalsSummary(props.activeProfessionals)}</span>
-          </Link>
-        </li>
-        <li className={styles.card}>
-          <span className={styles.businessName}>2. Servicios</span>
-          <span className={styles.muted}>Próximamente</span>
-        </li>
+        {steps.map((step) => (
+          <li key={step.path}>
+            <Link
+              href={`/panel/negocios/${props.businessId}/${step.path}`}
+              className={[styles.card, styles.cardLink].join(' ')}
+            >
+              <span className={styles.businessName}>{step.name}</span>
+              <span className={styles.muted}>{activeSummary(step.count)}</span>
+            </Link>
+          </li>
+        ))}
         <li className={styles.card}>
           <span className={styles.businessName}>3. Horarios</span>
           <span className={styles.muted}>Próximamente</span>
@@ -44,6 +50,7 @@ function SetupGuide(props: { businessId: string; activeProfessionals: number }) 
 export function BusinessOverview(props: {
   business: BusinessDetails;
   activeProfessionals: number;
+  activeServices: number;
 }) {
   const { business } = props;
   return (
@@ -52,7 +59,11 @@ export function BusinessOverview(props: {
         ← Tus negocios
       </Link>
       <h1 className={styles.title}>{business.name}</h1>
-      <SetupGuide businessId={business.id} activeProfessionals={props.activeProfessionals} />
+      <SetupGuide
+        businessId={business.id}
+        activeProfessionals={props.activeProfessionals}
+        activeServices={props.activeServices}
+      />
       <section className={styles.card} aria-labelledby="datos">
         <h2 id="datos" className={styles.sectionTitle}>
           Datos del negocio

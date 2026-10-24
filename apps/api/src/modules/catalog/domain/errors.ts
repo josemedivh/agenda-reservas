@@ -41,3 +41,15 @@ export class ProfessionalLimitReachedError extends CatalogError {
     );
   }
 }
+
+export class ServiceNotFoundError extends CatalogError {
+  constructor() {
+    super('No encontramos ese servicio.');
+  }
+}
+
+export class ServiceNameTakenError extends CatalogError {
+  constructor() {
+    super('Ya tienes un servicio activo con ese nombre.');
+  }
+}

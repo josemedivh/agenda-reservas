@@ -3,6 +3,7 @@ import {
   type BusinessDetails,
   type CurrentUserResponse,
   type Professional,
+  type Service,
 } from '@turnero/shared';
 import { cookies } from 'next/headers';
 
@@ -52,5 +53,15 @@ export function fetchProfessional(
 ): Promise<ApiResult<Professional>> {
   return getFromApi<Professional>(
     `/businesses/${encodeURIComponent(businessId)}/professionals/${encodeURIComponent(professionalId)}`,
+  );
+}
+
+export function fetchServices(businessId: string): Promise<ApiResult<Service[]>> {
+  return getFromApi<Service[]>(`/businesses/${encodeURIComponent(businessId)}/services`);
+}
+
+export function fetchService(businessId: string, serviceId: string): Promise<ApiResult<Service>> {
+  return getFromApi<Service>(
+    `/businesses/${encodeURIComponent(businessId)}/services/${encodeURIComponent(serviceId)}`,
   );
 }
