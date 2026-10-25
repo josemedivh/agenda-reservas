@@ -2,6 +2,7 @@ import { Catch, HttpStatus, type ArgumentsHost, type ExceptionFilter } from '@ne
 import type { ApiErrorResponse } from '@turnero/shared';
 import type { Response } from 'express';
 import {
+  BlockNotFoundError,
   InvalidScheduleDataError,
   ScheduleEditForbiddenError,
   ScheduleError,
@@ -12,14 +13,14 @@ function toResponse(error: ScheduleError): ApiErrorResponse {
   if (error instanceof InvalidScheduleDataError) {
     return {
       statusCode: HttpStatus.BAD_REQUEST,
-      message: 'Revisa los horarios.',
+      message: 'Revisa los datos ingresados.',
       fieldErrors: { [error.field]: [error.message] },
     };
   }
   if (error instanceof ScheduleEditForbiddenError) {
     return { statusCode: HttpStatus.FORBIDDEN, message: error.message };
   }
-  if (error instanceof UnknownProfessionalError) {
+  if (error instanceof UnknownProfessionalError || error instanceof BlockNotFoundError) {
     return { statusCode: HttpStatus.NOT_FOUND, message: error.message };
   }
   return { statusCode: HttpStatus.BAD_REQUEST, message: error.message };

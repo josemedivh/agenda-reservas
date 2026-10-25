@@ -1,6 +1,8 @@
 import {
+  blockInputSchema,
   canEditBusiness,
   weeklyScheduleSchema,
+  type BlockInput,
   type MemberRole,
   type WeeklySchedule,
 } from '@turnero/shared';
@@ -21,6 +23,18 @@ export function validateWeeklySchedule(input: WeeklySchedule): WeeklySchedule {
   if (!result.success) {
     const issue = result.error.issues[0];
     throw new InvalidScheduleDataError(issue?.message ?? 'Revisa los horarios.', 'ranges');
+  }
+  return result.data;
+}
+
+export function validateBlockInput(input: BlockInput): BlockInput {
+  const result = blockInputSchema.safeParse(input);
+  if (!result.success) {
+    const issue = result.error.issues[0];
+    throw new InvalidScheduleDataError(
+      issue?.message ?? 'Revisa el bloqueo.',
+      String(issue?.path[0] ?? ''),
+    );
   }
   return result.data;
 }

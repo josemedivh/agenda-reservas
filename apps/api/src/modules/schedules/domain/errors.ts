@@ -25,3 +25,9 @@ export class UnknownProfessionalError extends ScheduleError {
     super('No encontramos ese profesional.');
   }
 }
+
+export class BlockNotFoundError extends ScheduleError {
+  constructor() {
+    super('No encontramos ese bloqueo.');
+  }
+}

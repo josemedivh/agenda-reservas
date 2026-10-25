@@ -33,14 +33,14 @@ async function readError(response: Response): Promise<ApiError> {
  * sent and stored automatically). Throws ApiError on non-2xx responses.
  */
 export async function requestApi<T = undefined>(
-  method: 'GET' | 'POST' | 'PUT',
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   path: string,
   body?: unknown,
 ): Promise<T> {
   const response = await fetch(`/api${path}`, {
     method,
-    headers: method === 'GET' ? undefined : { 'Content-Type': 'application/json' },
-    body: method === 'GET' ? undefined : JSON.stringify(body ?? {}),
+    headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (!response.ok) {
     throw await readError(response);

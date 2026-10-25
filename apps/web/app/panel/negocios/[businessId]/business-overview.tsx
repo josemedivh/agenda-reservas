@@ -80,6 +80,9 @@ export function BusinessOverview(props: {
         activeServices={props.activeServices}
         professionalsWithSchedule={props.professionalsWithSchedule}
       />
+      <Link href={`/panel/negocios/${business.id}/bloqueos`} className={styles.secondaryAction}>
+        Bloqueos y feriados
+      </Link>
       <section className={styles.card} aria-labelledby="datos">
         <h2 id="datos" className={styles.sectionTitle}>
           Datos del negocio

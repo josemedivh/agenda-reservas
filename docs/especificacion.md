@@ -100,7 +100,7 @@ Todas las tablas de negocio llevan el identificador del negocio (inquilino). La 
 
 **Versión 1**
 
-- [ ] Registro del negocio y configuración (servicios, profesionales, horarios, bloqueos)
+- [x] Registro del negocio y configuración (servicios, profesionales, horarios, bloqueos)
 - [ ] Página pública de reservas con disponibilidad en tiempo real
 - [ ] Agenda del negocio por día y semana, con creación manual de citas
 - [ ] Confirmación y recordatorio automáticos

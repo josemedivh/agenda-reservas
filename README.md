@@ -88,6 +88,13 @@ El módulo `identity` (`apps/api/src/modules/identity`) maneja cuentas y sesione
 - `schedules` pregunta al catálogo si un profesional existe a través de su caso de uso exportado (`GetProfessional`), sin leer sus tablas.
 - Web: `/panel/negocios/{id}/horarios` y el editor semanal en `…/horarios/{profesionalId}`.
 
+## Bloqueos y feriados
+
+- `GET /businesses/:businessId/blocks` (los que no han terminado), `POST` y `DELETE …/:blockId`. Un bloqueo sin profesional aplica a todo el negocio.
+- Se ingresan en la hora local del negocio, de todo el día (de una fecha a otra) o por horas en un día; la API los convierte a UTC (`timestamptz`) con la zona horaria del negocio usando `luxon` (`blockInterval` en `packages/shared`), incluidos los días con cambio de horario.
+- Los bloqueos sí se borran (no están en la lista de datos que nunca se borran).
+- Web: `/panel/negocios/{id}/bloqueos` y `…/bloqueos/nuevo`.
+
 Si cambias el script de roles, recrea el volumen con `docker compose down -v` (borra los datos locales).
 
 ## Scripts

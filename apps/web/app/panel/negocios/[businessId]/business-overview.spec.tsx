@@ -91,4 +91,19 @@ describe('BusinessOverview', () => {
       '1 de 2 con horario',
     );
   });
+
+  it('links the blocks and holidays', () => {
+    render(
+      <BusinessOverview
+        business={business}
+        activeProfessionals={1}
+        activeServices={1}
+        professionalsWithSchedule={1}
+      />,
+    );
+
+    expect(screen.getByRole('link', { name: 'Bloqueos y feriados' }).getAttribute('href')).toBe(
+      '/panel/negocios/business-1/bloqueos',
+    );
+  });
 });

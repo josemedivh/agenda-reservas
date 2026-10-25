@@ -1,5 +1,6 @@
 import {
   SESSION_COOKIE_NAME,
+  type Block,
   type BusinessDetails,
   type CurrentUserResponse,
   type Professional,
@@ -81,4 +82,8 @@ export function fetchProfessionalWorkingHours(
   return getFromApi<WeeklySchedule>(
     `/businesses/${encodeURIComponent(businessId)}/professionals/${encodeURIComponent(professionalId)}/working-hours`,
   );
+}
+
+export function fetchBlocks(businessId: string): Promise<ApiResult<Block[]>> {
+  return getFromApi<Block[]>(`/businesses/${encodeURIComponent(businessId)}/blocks`);
 }

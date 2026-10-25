@@ -7,3 +7,4 @@ export * from './business.js';
 export * from './professional.js';
 export * from './service.js';
 export * from './schedule.js';
+export * from './block.js';

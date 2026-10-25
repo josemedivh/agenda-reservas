@@ -45,6 +45,7 @@ model Business {
   members       Member[]
   professionals Professional[]
   services      Service[]
+  blocks        Block[]
 
   @@map("businesses")
 }
@@ -113,6 +114,7 @@ model Professional {
   user         User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
   services     ServiceProfessional[]
   workingHours WorkingHours[]
+  blocks       Block[]
 
   // Target of (professional_id, business_id) references: assignments cannot cross businesses.
   @@unique([id, businessId], map: "professionals_id_business_id_key")
@@ -173,4 +175,23 @@ model WorkingHours {
   @@index([professionalId])
   @@index([businessId])
   @@map("working_hours")
+}
+
+// Time when bookings are not possible: vacations, holidays, an afternoon off. Without a
+// professional it applies to the whole business. UTC instants, end exclusive.
+model Block {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId     String   @map("business_id") @db.Uuid
+  professionalId String?  @map("professional_id") @db.Uuid
+  startsAt       DateTime @map("starts_at") @db.Timestamptz
+  endsAt         DateTime @map("ends_at") @db.Timestamptz
+  reason         String?
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  business     Business      @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  professional Professional? @relation(fields: [professionalId, businessId], references: [id, businessId], onDelete: Restrict)
+
+  @@index([businessId, endsAt])
+  @@index([professionalId])
+  @@map("blocks")
 }

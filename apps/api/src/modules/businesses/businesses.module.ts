@@ -25,5 +25,7 @@ import { BusinessesController } from './presentation/businesses.controller.js';
     GetBusiness,
     UpdateBusinessDetails,
   ],
+  // Public API for other modules (e.g. schedules reads the business's time zone).
+  exports: [GetBusiness],
 })
 export class BusinessesModule {}
