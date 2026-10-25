@@ -217,3 +217,17 @@
   gap: 2px;
   min-width: 0;
 }
+
+/* The public link with its copy button; wraps on narrow phones. */
+.linkRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  overflow-wrap: anywhere;
+}
+
+.linkRow a {
+  color: var(--color-accent);
+  font-weight: 600;
+}

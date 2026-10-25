@@ -3,85 +3,21 @@
 import {
   MIN_NOTICE_MINUTES,
   SLOT_STEP_MINUTES,
-  shortDateLabel,
   type AvailabilitySlot,
   type DayAvailability,
   type DayAvailabilitySummary,
-  type DayStatus,
   type Professional,
   type Service,
 } from '@turnero/shared';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { ApiError, requestApi } from '../../lib/api/client';
+import { useState } from 'react';
+import { queryString, useApiGet } from '../../lib/api/use-api-get';
+import { dateLabel } from '../../lib/dates';
 import { SelectField } from '../forms/fields';
 import styles from './availability.module.css';
+import { DayPicker, defaultDate } from './day-picker';
 
 const DAYS_SHOWN = 14;
-const LOAD_ERROR = 'No pudimos cargar las horas. Inténtalo de nuevo en un momento.';
-
-const STATUS_LABELS: Record<DayStatus, string> = {
-  closed: 'cerrado',
-  full: 'completo',
-  available: 'con horas libres',
-};
-
-type Loaded<T> = { path: string; data: T } | { path: string; error: string };
-
-/** GET `path` (null: nothing to ask). Returns null while the answer for this path is loading. */
-function useApiGet<T>(path: string | null): Loaded<T> | null {
-  const [loaded, setLoaded] = useState<Loaded<T> | null>(null);
-
-  useEffect(() => {
-    if (path === null) {
-      return undefined;
-    }
-    let cancelled = false;
-    requestApi<T>('GET', path).then(
-      (data) => {
-        if (!cancelled) {
-          setLoaded({ path, data });
-        }
-      },
-      (error: unknown) => {
-        if (!cancelled) {
-          setLoaded({ path, error: error instanceof ApiError ? error.message : LOAD_ERROR });
-        }
-      },
-    );
-    return () => {
-      cancelled = true;
-    };
-  }, [path]);
-
-  // Ignore answers to a question the owner has already changed.
-  return loaded?.path === path ? loaded : null;
-}
-
-/** Query string without the empty values ("any professional" is simply left out). */
-function queryString(values: Record<string, string>): string {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(values)) {
-    if (value !== '') {
-      params.set(key, value);
-    }
-  }
-  return params.toString();
-}
-
-function dateLabel(date: string): string {
-  const label = shortDateLabel(date);
-  return `${label.weekday} ${label.day} ${label.month}`;
-}
-
-/** Opens the first day with free times, or else the first day with taken ones. */
-function defaultDate(days: readonly DayAvailabilitySummary[]): string | null {
-  return (
-    days.find((day) => day.status === 'available')?.date ??
-    days.find((day) => day.status === 'full')?.date ??
-    null
-  );
-}
 
 function freeTimesSummary(slots: readonly AvailabilitySlot[]): string {
   const free = slots.filter((slot) => slot.professionalIds.length > 0).length;
@@ -92,40 +28,6 @@ function freeTimesSummary(slots: readonly AvailabilitySlot[]): string {
     return 'Todas las horas de ese día están ocupadas.';
   }
   return free === 1 ? '1 hora libre' : `${String(free)} horas libres`;
-}
-
-function DayPicker(props: {
-  days: readonly DayAvailabilitySummary[];
-  selected: string | null;
-  onPick: (date: string) => void;
-}) {
-  return (
-    <fieldset className={styles.picker}>
-      <legend className={styles.legend}>Día</legend>
-      <div className={styles.days}>
-        {props.days.map((day) => {
-          const label = shortDateLabel(day.date);
-          return (
-            <button
-              key={day.date}
-              type="button"
-              className={styles.day}
-              data-status={day.status}
-              aria-pressed={day.date === props.selected}
-              aria-label={`${dateLabel(day.date)}, ${STATUS_LABELS[day.status]}`}
-              disabled={day.status === 'closed'}
-              onClick={() => {
-                props.onPick(day.date);
-              }}
-            >
-              <span className={styles.weekday}>{label.weekday}</span>
-              <span className={styles.dayNumber}>{label.day}</span>
-            </button>
-          );
-        })}
-      </div>
-    </fieldset>
-  );
 }
 
 function TimeList(props: {

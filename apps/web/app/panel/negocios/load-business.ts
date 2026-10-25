@@ -1,4 +1,5 @@
 import type {
+  Appointment,
   Block,
   BusinessDetails,
   Professional,
@@ -8,6 +9,7 @@ import type {
 } from '@turnero/shared';
 import { notFound, redirect } from 'next/navigation';
 import {
+  fetchAppointments,
   fetchBlocks,
   fetchBusiness,
   fetchProfessional,
@@ -67,4 +69,12 @@ export async function loadProfessionalWorkingHours(
 
 export async function loadBlocks(businessId: string): Promise<Block[]> {
   return unwrap(await fetchBlocks(businessId));
+}
+
+export async function loadAppointments(
+  businessId: string,
+  from: string,
+  days: number,
+): Promise<Appointment[]> {
+  return unwrap(await fetchAppointments(businessId, from, days));
 }

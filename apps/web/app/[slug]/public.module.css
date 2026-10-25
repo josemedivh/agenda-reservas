@@ -1,0 +1,81 @@
+/* Public pages of a business (/{slug}): built for phones first, centered on wider screens. */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 28px 20px 22px;
+  background: var(--color-ink);
+  color: #ffffff;
+}
+
+.header > * {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.kicker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent-on-dark);
+}
+
+.name {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  overflow-wrap: anywhere;
+}
+
+.address {
+  margin: 0;
+  font-size: 14px;
+  color: #d4dce2;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 22px 20px 0;
+}
+
+.contentPadded {
+  padding-bottom: 32px;
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.missing {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 40px;
+}
+
+.missing h1 {
+  margin: 0;
+  font-size: 28px;
+  text-transform: uppercase;
+}
+
+.missing p {
+  margin: 0;
+  color: var(--color-muted);
+}

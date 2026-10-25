@@ -65,11 +65,11 @@ describe('AvailabilityPreview', () => {
     );
   }
 
-  it('shows the coming days, closed ones disabled, and opens the first available one', async () => {
+  it('shows the coming days, those without times disabled, and opens the first available one', async () => {
     renderPreview();
 
     const picker = await screen.findByRole('group', { name: 'Día' });
-    expect(within(picker).getByRole('button', { name: /Lun 2 nov, cerrado/ })).toHaveProperty(
+    expect(within(picker).getByRole('button', { name: /Lun 2 nov, sin horas/ })).toHaveProperty(
       'disabled',
       true,
     );

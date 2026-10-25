@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  localDateTime,
   todayIn,
   type Appointment,
   type AvailabilityDaysQuery,
@@ -31,7 +32,7 @@ function toBookingDetails(
   business: PublicBusinessRecord,
   professionals: readonly Professional[],
 ): BookingDetails {
-  const local = DateTime.fromISO(appointment.startsAt).setZone(business.timeZone);
+  const start = localDateTime(appointment.startsAt, business.timeZone);
   return {
     status: appointment.status,
     serviceName: appointment.serviceName,
@@ -42,8 +43,9 @@ function toBookingDetails(
     customerName: appointment.customer.name,
     startsAt: appointment.startsAt,
     endsAt: appointment.endsAt,
-    date: local.toISODate() ?? '',
-    time: local.toFormat('HH:mm'),
+    date: start.date,
+    time: start.time,
+    endTime: localDateTime(appointment.endsAt, business.timeZone).time,
     business: {
       name: business.name,
       slug: business.slug,

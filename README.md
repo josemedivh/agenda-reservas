@@ -113,6 +113,7 @@ El módulo `identity` (`apps/api/src/modules/identity`) maneja cuentas y sesione
 - Un cliente por teléfono dentro de cada negocio (`INSERT … ON CONFLICT`); si vuelve a reservar con otro nombre, se guarda el nuevo.
 - El link del cliente lleva un código aleatorio de 144 bits; en la base solo se guarda su hash SHA-256.
 - `GET /businesses/:businessId/appointments?from&days` lista las citas por días locales del negocio (cualquier miembro).
+- Web: `/panel/negocios/{id}/citas` ("Próximas citas"): las citas de los próximos 14 días agrupadas por día, con el teléfono y un enlace a WhatsApp de cada cliente, y el link de reservas para copiar. Por ahora solo se pueden ver; la agenda completa llega después.
 
 ## Página pública de reservas
 
@@ -125,6 +126,11 @@ El módulo `identity` (`apps/api/src/modules/identity`) maneja cuentas y sesione
 - Al reservar se recalcula la disponibilidad. Si la hora ya no se ofrece, responde 409.
 - Con "Cualquiera", la cita va a quien tenga menos citas ese día (empates por nombre). Si a esa persona la acaban de reservar, se intenta con la siguiente.
 - Límite por visitante: 10 intentos de reserva por minuto y 120 consultas por minuto.
+- Web:
+  - `/{slug}` es la página de reservas, pensada para celular: 1. Servicio, 2. Profesional ("Cualquiera" o uno), 3. Día y hora, 4. Nombre y WhatsApp. Si la hora se ocupó mientras el cliente llenaba los datos, se avisa y se vuelven a cargar las horas.
+  - `/{slug}/reserva/{código}` muestra la reserva confirmada y el teléfono del negocio. Esta página no se indexa en buscadores.
+  - Un link que no existe, o de un negocio suspendido, muestra "No encontramos esta página".
+  - Las rutas fijas (`/panel`, `/ingresar`, …) tienen prioridad sobre `/{slug}`; por eso esas palabras están en `RESERVED_SLUGS`.
 
 Si cambias el script de roles, recrea el volumen con `docker compose down -v` (borra los datos locales).
 

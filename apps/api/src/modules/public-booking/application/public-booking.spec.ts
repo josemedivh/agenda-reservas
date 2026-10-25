@@ -139,6 +139,7 @@ describe('public booking use cases', () => {
           endsAt: '2026-11-03T14:45:00.000Z',
           date: '2026-11-03',
           time: '09:00',
+          endTime: '09:45',
           business: {
             name: 'Barbería El Faro',
             slug: 'barberia-el-faro',

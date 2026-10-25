@@ -1,10 +1,13 @@
 import {
   SESSION_COOKIE_NAME,
+  type Appointment,
   type Block,
+  type BookingDetails,
   type BusinessDetails,
   type CurrentUserResponse,
   type Professional,
   type ProfessionalSchedule,
+  type PublicBusiness,
   type Service,
   type WeeklySchedule,
 } from '@turnero/shared';
@@ -86,4 +89,37 @@ export function fetchProfessionalWorkingHours(
 
 export function fetchBlocks(businessId: string): Promise<ApiResult<Block[]>> {
   return getFromApi<Block[]>(`/businesses/${encodeURIComponent(businessId)}/blocks`);
+}
+
+export function fetchAppointments(
+  businessId: string,
+  from: string,
+  days: number,
+): Promise<ApiResult<Appointment[]>> {
+  const query = new URLSearchParams({ from, days: String(days) });
+  return getFromApi<Appointment[]>(
+    `/businesses/${encodeURIComponent(businessId)}/appointments?${query.toString()}`,
+  );
+}
+
+/** Server-side GET of the public booking pages: no session. Null when not found. */
+async function getPublicFromApi<T>(path: string): Promise<T | null> {
+  const response = await fetch(`${apiUrl}${path}`, { cache: 'no-store' });
+  if (response.status === 404) {
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error(`GET ${path} failed with status ${String(response.status)}`);
+  }
+  return (await response.json()) as T;
+}
+
+export function fetchPublicBusiness(slug: string): Promise<PublicBusiness | null> {
+  return getPublicFromApi<PublicBusiness>(`/public/businesses/${encodeURIComponent(slug)}`);
+}
+
+export function fetchBooking(slug: string, code: string): Promise<BookingDetails | null> {
+  return getPublicFromApi<BookingDetails>(
+    `/public/businesses/${encodeURIComponent(slug)}/appointments/${encodeURIComponent(code)}`,
+  );
 }

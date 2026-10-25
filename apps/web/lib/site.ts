@@ -7,3 +7,8 @@ export const PUBLIC_SITE_HOST = new URL(siteUrl).host;
 export function publicBusinessAddress(slug: string): string {
   return `${PUBLIC_SITE_HOST}/${slug}`;
 }
+
+/** Full link to share with clients ("https://turnero.app/barberia-el-faro"). */
+export function publicBusinessUrl(slug: string): string {
+  return new URL(`/${slug}`, siteUrl).href;
+}

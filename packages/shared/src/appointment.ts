@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { z } from 'zod';
 import {
   daysCountSchema,
@@ -6,6 +7,7 @@ import {
   serviceIdSchema,
 } from './availability.js';
 import { normalizePhone } from './business.js';
+import { WEEKDAYS } from './schedule.js';
 
 export const CUSTOMER_NAME_MIN_LENGTH = 2;
 export const CUSTOMER_NAME_MAX_LENGTH = 80;
@@ -22,19 +24,23 @@ const customerNameSchema = z
     error: `Tu nombre no puede tener más de ${String(CUSTOMER_NAME_MAX_LENGTH)} caracteres.`,
   });
 
-const customerPhoneSchema = z
-  .string({ error: 'Ingresa tu número de WhatsApp.' })
-  .transform((raw, ctx) => {
-    const phone = normalizePhone(raw);
-    if (!phone) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Ingresa un número válido, por ejemplo 099 123 4567.',
-      });
-      return z.NEVER;
-    }
-    return phone;
-  });
+const PHONE_MISSING = 'Ingresa tu número de WhatsApp.';
+
+const customerPhoneSchema = z.string({ error: PHONE_MISSING }).transform((raw, ctx) => {
+  if (raw.trim() === '') {
+    ctx.addIssue({ code: 'custom', message: PHONE_MISSING });
+    return z.NEVER;
+  }
+  const phone = normalizePhone(raw);
+  if (!phone) {
+    ctx.addIssue({
+      code: 'custom',
+      message: 'Ingresa un número válido, por ejemplo 099 123 4567.',
+    });
+    return z.NEVER;
+  }
+  return phone;
+});
 
 /** A time offered by the availability, as a UTC instant ("2026-11-03T14:00:00.000Z"). */
 const startsAtSchema = z.iso
@@ -114,9 +120,10 @@ export interface BookingDetails {
   /** UTC instants (ISO). */
   startsAt: string;
   endsAt: string;
-  /** Local date ("YYYY-MM-DD") and time ("09:30") in the business. */
+  /** Local date ("YYYY-MM-DD"), start ("09:30") and end ("10:00") in the business. */
   date: string;
   time: string;
+  endTime: string;
   business: { name: string; slug: string; phone: string; address: string | null };
 }
 
@@ -124,4 +131,32 @@ export interface BookingConfirmation {
   /** Secret of the client's link (only shown once; the API stores its hash). */
   code: string;
   booking: BookingDetails;
+}
+
+const MONTH_NAMES: readonly string[] = [
+  'enero',
+  'febrero',
+  'marzo',
+  'abril',
+  'mayo',
+  'junio',
+  'julio',
+  'agosto',
+  'septiembre',
+  'octubre',
+  'noviembre',
+  'diciembre',
+];
+
+/** Local date ("2026-11-03") and time ("09:00") of a UTC instant in the IANA time zone. */
+export function localDateTime(instant: string, timeZone: string): { date: string; time: string } {
+  const local = DateTime.fromISO(instant).setZone(timeZone);
+  return { date: local.toISODate() ?? '', time: local.toFormat('HH:mm') };
+}
+
+/** "2026-11-03" -> "martes 3 de noviembre". */
+export function longDateLabel(date: string): string {
+  const day = DateTime.fromISO(date, { zone: 'UTC' });
+  const weekday = WEEKDAYS.find((candidate) => candidate.value === day.weekday)?.label ?? '';
+  return `${weekday.toLowerCase()} ${String(day.day)} de ${MONTH_NAMES[day.month - 1] ?? ''}`;
 }

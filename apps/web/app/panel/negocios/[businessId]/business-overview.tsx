@@ -1,7 +1,8 @@
 import { canEditBusiness, type BusinessDetails } from '@turnero/shared';
 import Link from 'next/link';
 import { formatPhone, ROLE_LABELS, timeZoneLabel } from '../../../../lib/format';
-import { publicBusinessAddress } from '../../../../lib/site';
+import { CopyLinkButton } from '../../../../components/appointments/copy-link-button';
+import { publicBusinessAddress, publicBusinessUrl } from '../../../../lib/site';
 import styles from '../../panel.module.css';
 
 function activeSummary(count: number): string {
@@ -74,6 +75,9 @@ export function BusinessOverview(props: {
         ← Tus negocios
       </Link>
       <h1 className={styles.title}>{business.name}</h1>
+      <Link href={`/panel/negocios/${business.id}/citas`} className={styles.primaryAction}>
+        Próximas citas
+      </Link>
       <SetupGuide
         businessId={business.id}
         activeProfessionals={props.activeProfessionals}
@@ -96,7 +100,12 @@ export function BusinessOverview(props: {
         <dl className={styles.details}>
           <div>
             <dt>Link de tu página</dt>
-            <dd>{publicBusinessAddress(business.slug)}</dd>
+            <dd className={styles.linkRow}>
+              <a href={`/${business.slug}`} target="_blank" rel="noreferrer">
+                {publicBusinessAddress(business.slug)}
+              </a>
+              <CopyLinkButton url={publicBusinessUrl(business.slug)} />
+            </dd>
           </div>
           <div>
             <dt>Teléfono de contacto</dt>

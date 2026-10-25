@@ -151,6 +151,7 @@ describe('public booking page', () => {
       endsAt: at(business.date, '09:30'),
       date: business.date,
       time: '09:00',
+      endTime: '09:30',
       business: {
         name: 'Barbería El Faro',
         slug: business.business.slug,

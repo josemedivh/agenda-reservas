@@ -92,6 +92,25 @@ describe('BusinessOverview', () => {
     );
   });
 
+  it('leads to the upcoming appointments and the public booking page', () => {
+    render(
+      <BusinessOverview
+        business={business}
+        activeProfessionals={1}
+        activeServices={1}
+        professionalsWithSchedule={1}
+      />,
+    );
+
+    expect(screen.getByRole('link', { name: 'Próximas citas' }).getAttribute('href')).toBe(
+      '/panel/negocios/business-1/citas',
+    );
+    const page = screen.getByRole('link', { name: 'localhost:3000/barberia-el-faro' });
+    expect(page.getAttribute('href')).toBe('/barberia-el-faro');
+    expect(page.getAttribute('target')).toBe('_blank');
+    expect(screen.getByRole('button', { name: 'Copiar link' })).toBeTruthy();
+  });
+
   it('links the availability preview, the blocks and holidays', () => {
     render(
       <BusinessOverview
