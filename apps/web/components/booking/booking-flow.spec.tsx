@@ -162,6 +162,9 @@ describe('BookingFlow', () => {
     await pickNine(user);
 
     expect(screen.getByText('Corte clásico · Mar 3 nov · 09:00')).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Cómo cuidamos tus datos' }).getAttribute('href')).toBe(
+      '/privacidad',
+    );
     await user.type(screen.getByLabelText('Nombre'), 'Miguel Torres');
     await user.type(screen.getByLabelText('WhatsApp'), '098 765 4321');
     await user.click(screen.getByRole('button', { name: 'Reservar' }));

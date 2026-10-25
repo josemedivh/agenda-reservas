@@ -9,6 +9,7 @@ import {
   type DayAvailabilitySummary,
   type PublicBusiness,
 } from '@turnero/shared';
+import Link from 'next/link';
 import { useId, useState } from 'react';
 import { ApiError, postToApi } from '../../lib/api/client';
 import { queryString, useApiGet } from '../../lib/api/use-api-get';
@@ -306,7 +307,10 @@ export function BookingFlow(props: {
             }}
           />
           <p className={styles.note}>
-            No necesitas crear una cuenta. Usamos tu nombre y tu número solo para esta cita.
+            No necesitas crear una cuenta. Usamos tu nombre y tu número solo para esta cita.{' '}
+            <Link href="/privacidad" className={styles.link}>
+              Cómo cuidamos tus datos
+            </Link>
           </p>
         </section>
       ) : null}

@@ -1,0 +1,44 @@
+.page {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+.policy {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  line-height: 1.55;
+}
+
+.policy h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.policy p,
+.policy ul {
+  margin: 0;
+}
+
+.policy ul {
+  padding-left: 20px;
+}
+
+.title {
+  margin: 0;
+  font-size: 34px;
+  text-transform: uppercase;
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+.link {
+  color: var(--color-accent);
+  font-weight: 600;
+}

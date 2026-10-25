@@ -134,6 +134,13 @@ El módulo `identity` (`apps/api/src/modules/identity`) maneja cuentas y sesione
 
 Si cambias el script de roles, recrea el volumen con `docker compose down -v` (borra los datos locales).
 
+## Despliegue
+
+- Imágenes Docker: `apps/api/Dockerfile` (corre `prisma migrate deploy` antes de cada versión desde la plataforma) y `apps/web/Dockerfile` (servidor `standalone` de Next). Se construyen desde la raíz del repositorio; la CI comprueba que compilen.
+- La web envía encabezados de seguridad (HTTPS obligatorio, sin marcos de otras páginas). `/privacidad` explica qué datos se guardan y para qué.
+- En una base administrada, los roles se crean una vez con `docker/postgres/production-roles.sql`.
+- Pasos completos para Railway: [`docs/despliegue.md`](docs/despliegue.md).
+
 ## Scripts
 
 | Comando                | Qué hace                                           |

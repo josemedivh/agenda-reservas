@@ -12,3 +12,6 @@ export function publicBusinessAddress(slug: string): string {
 export function publicBusinessUrl(slug: string): string {
   return new URL(`/${slug}`, siteUrl).href;
 }
+
+/** Turnero's contact for privacy requests (shown on /privacidad); unset hides it. */
+export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || null;
