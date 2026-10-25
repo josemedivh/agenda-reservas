@@ -80,6 +80,12 @@ export function BusinessOverview(props: {
         activeServices={props.activeServices}
         professionalsWithSchedule={props.professionalsWithSchedule}
       />
+      <Link
+        href={`/panel/negocios/${business.id}/disponibilidad`}
+        className={styles.secondaryAction}
+      >
+        Ver disponibilidad
+      </Link>
       <Link href={`/panel/negocios/${business.id}/bloqueos`} className={styles.secondaryAction}>
         Bloqueos y feriados
       </Link>

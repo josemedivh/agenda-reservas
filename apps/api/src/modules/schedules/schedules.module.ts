@@ -44,5 +44,7 @@ import { WorkingHoursController } from './presentation/working-hours.controller.
     CreateBlock,
     DeleteBlock,
   ],
+  // Public API for other modules (availability reads working hours and blocks).
+  exports: [ListWorkingHours, ListBlocks],
 })
 export class SchedulesModule {}

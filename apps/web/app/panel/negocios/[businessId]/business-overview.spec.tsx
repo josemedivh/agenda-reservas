@@ -92,7 +92,7 @@ describe('BusinessOverview', () => {
     );
   });
 
-  it('links the blocks and holidays', () => {
+  it('links the availability preview, the blocks and holidays', () => {
     render(
       <BusinessOverview
         business={business}
@@ -104,6 +104,9 @@ describe('BusinessOverview', () => {
 
     expect(screen.getByRole('link', { name: 'Bloqueos y feriados' }).getAttribute('href')).toBe(
       '/panel/negocios/business-1/bloqueos',
+    );
+    expect(screen.getByRole('link', { name: 'Ver disponibilidad' }).getAttribute('href')).toBe(
+      '/panel/negocios/business-1/disponibilidad',
     );
   });
 });

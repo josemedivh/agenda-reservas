@@ -42,7 +42,7 @@ import { ServicesController } from './presentation/services.controller.js';
     UpdateService,
     SetServiceActive,
   ],
-  // Public API for other modules (e.g. schedules checks that a professional exists).
-  exports: [GetProfessional],
+  // Public API for other modules (schedules checks professionals; availability reads the catalog).
+  exports: [GetProfessional, ListProfessionals, GetService],
 })
 export class CatalogModule {}

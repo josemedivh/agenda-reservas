@@ -229,6 +229,9 @@ importers:
       cookie-parser:
         specifier: 1.4.7
         version: 1.4.7
+      luxon:
+        specifier: 3.7.2
+        version: 3.7.2
       reflect-metadata:
         specifier: 0.2.2
         version: 0.2.2
@@ -254,6 +257,9 @@ importers:
       '@types/express':
         specifier: 5.0.6
         version: 5.0.6
+      '@types/luxon':
+        specifier: 3.7.6
+        version: 3.7.6
       '@types/supertest':
         specifier: 7.2.1
         version: 7.2.1

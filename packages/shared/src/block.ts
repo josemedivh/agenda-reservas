@@ -6,7 +6,7 @@ export const BLOCK_REASON_MAX_LENGTH = 120;
 const MAX_BLOCK_DAYS = 366;
 
 // Fixed names (instead of Intl) so the text is the same in Node and every browser.
-const MONTHS = [
+export const SHORT_MONTH_NAMES: readonly string[] = [
   'ene',
   'feb',
   'mar',
@@ -141,7 +141,7 @@ export function blockInterval(
 
 function dayLabel(dateTime: DateTime): string {
   const weekday = WEEKDAYS.find((day) => day.value === dateTime.weekday)?.short ?? '';
-  return `${weekday} ${String(dateTime.day)} ${MONTHS[dateTime.month - 1] ?? ''}`;
+  return `${weekday} ${String(dateTime.day)} ${SHORT_MONTH_NAMES[dateTime.month - 1] ?? ''}`;
 }
 
 function lowerFirst(text: string): string {

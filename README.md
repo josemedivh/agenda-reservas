@@ -95,6 +95,16 @@ El módulo `identity` (`apps/api/src/modules/identity`) maneja cuentas y sesione
 - Los bloqueos sí se borran (no están en la lista de datos que nunca se borran).
 - Web: `/panel/negocios/{id}/bloqueos` y `…/bloqueos/nuevo`.
 
+## Disponibilidad
+
+- Módulo `availability`: no guarda nada, calcula las horas a partir de horarios, bloqueos y citas. Lee los otros módulos solo por sus casos de uso exportados.
+- `GET /businesses/:businessId/availability?serviceId&date&professionalId` (las horas de un día) y `GET …/availability/days?serviceId&from&days&professionalId` (resumen por día: `closed`, `full` o `available`, hasta 31 días). Sin `professionalId` es "Cualquiera": la unión de quienes realizan el servicio, con quién está libre en cada hora.
+- Horas cada 30 minutos desde el inicio de cada turno. El servicio debe caber en el turno y no cruzar un bloqueo; el tiempo de preparación ocupa al profesional después del servicio y puede pasar del cierre.
+- Al menos 1 hora de anticipación y hasta 60 días por delante, contados en la zona horaria del negocio. Las horas que no existen por el cambio de horario se omiten.
+- Las horas bloqueadas o pasadas no se devuelven; las ocupadas por citas sí, con `professionalIds` vacío, para mostrarlas en gris.
+- Por ahora solo para miembros del negocio y sin citas (`NoAppointmentsYet`); la página pública y las citas llegan en el paso 8.
+- Web: `/panel/negocios/{id}/disponibilidad` ("Ver disponibilidad").
+
 Si cambias el script de roles, recrea el volumen con `docker compose down -v` (borra los datos locales).
 
 ## Scripts
