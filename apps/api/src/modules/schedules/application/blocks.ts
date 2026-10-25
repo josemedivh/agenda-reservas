@@ -3,6 +3,7 @@ import {
   blockInterval,
   type Block,
   type BlockInput,
+  type BusinessScope,
   type MembershipSummary,
 } from '@turnero/shared';
 import { BlockNotFoundError, UnknownProfessionalError } from '../domain/errors.js';
@@ -17,8 +18,8 @@ export class ListBlocks {
     private readonly clock: Clock,
   ) {}
 
-  execute(membership: MembershipSummary): Promise<Block[]> {
-    return this.blocks.listEndingAfter(membership.businessId, this.clock.now());
+  execute(scope: BusinessScope): Promise<Block[]> {
+    return this.blocks.listEndingAfter(scope.businessId, this.clock.now());
   }
 }
 

@@ -1,6 +1,6 @@
 import type {
   Block,
-  MembershipSummary,
+  BusinessScope,
   Professional,
   ProfessionalSchedule,
   Service,
@@ -10,18 +10,18 @@ import type {
 // that owns it. Abstract classes so NestJS can use them as injection tokens.
 
 export abstract class CatalogReader {
-  abstract findService(membership: MembershipSummary, serviceId: string): Promise<Service | null>;
-  abstract listProfessionals(membership: MembershipSummary): Promise<Professional[]>;
+  abstract findService(scope: BusinessScope, serviceId: string): Promise<Service | null>;
+  abstract listProfessionals(scope: BusinessScope): Promise<Professional[]>;
 }
 
 export abstract class ScheduleReader {
-  abstract workingHours(membership: MembershipSummary): Promise<ProfessionalSchedule[]>;
+  abstract workingHours(scope: BusinessScope): Promise<ProfessionalSchedule[]>;
   /** Blocks that have not ended yet (availability never looks at the past). */
-  abstract upcomingBlocks(membership: MembershipSummary): Promise<Block[]>;
+  abstract upcomingBlocks(scope: BusinessScope): Promise<Block[]>;
 }
 
 export abstract class BusinessTimeZones {
-  abstract timeZoneOf(membership: MembershipSummary): Promise<string>;
+  abstract timeZoneOf(scope: BusinessScope): Promise<string>;
 }
 
 export interface BusyInterval {
@@ -32,11 +32,7 @@ export interface BusyInterval {
 }
 
 export abstract class AppointmentReader {
-  abstract busyIntervals(
-    membership: MembershipSummary,
-    from: Date,
-    to: Date,
-  ): Promise<BusyInterval[]>;
+  abstract busyIntervals(scope: BusinessScope, from: Date, to: Date): Promise<BusyInterval[]>;
 }
 
 export abstract class Clock {

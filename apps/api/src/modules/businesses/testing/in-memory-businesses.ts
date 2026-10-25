@@ -30,6 +30,13 @@ export class InMemoryBusinessRepository extends BusinessRepository {
     return Promise.resolve(this.records.find((record) => record.id === businessId) ?? null);
   }
 
+  findActiveIdBySlug(slug: string): Promise<string | null> {
+    const record = this.records.find(
+      (candidate) => candidate.slug === slug && candidate.status === 'active',
+    );
+    return Promise.resolve(record?.id ?? null);
+  }
+
   updateProfile(businessId: string, profile: BusinessProfile): Promise<BusinessRecord> {
     const record = this.records.find((candidate) => candidate.id === businessId);
     if (!record) {

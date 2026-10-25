@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { MembershipSummary, Service, ServiceInput } from '@turnero/shared';
+import type { BusinessScope, MembershipSummary, Service, ServiceInput } from '@turnero/shared';
 import {
   assertAssignableProfessionals,
   assertCanManageCatalog,
@@ -20,8 +20,8 @@ async function activeProfessionalIds(
 export class ListServices {
   constructor(private readonly services: ServiceRepository) {}
 
-  execute(membership: MembershipSummary): Promise<Service[]> {
-    return this.services.list(membership.businessId);
+  execute(scope: BusinessScope): Promise<Service[]> {
+    return this.services.list(scope.businessId);
   }
 }
 
@@ -29,8 +29,8 @@ export class ListServices {
 export class GetService {
   constructor(private readonly services: ServiceRepository) {}
 
-  async execute(membership: MembershipSummary, serviceId: string): Promise<Service> {
-    const service = await this.services.findById(membership.businessId, serviceId);
+  async execute(scope: BusinessScope, serviceId: string): Promise<Service> {
+    const service = await this.services.findById(scope.businessId, serviceId);
     if (!service) {
       throw new ServiceNotFoundError();
     }

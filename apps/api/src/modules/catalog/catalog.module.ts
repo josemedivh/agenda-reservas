@@ -43,6 +43,6 @@ import { ServicesController } from './presentation/services.controller.js';
     SetServiceActive,
   ],
   // Public API for other modules (schedules checks professionals; availability reads the catalog).
-  exports: [GetProfessional, ListProfessionals, GetService],
+  exports: [GetProfessional, ListProfessionals, ListServices, GetService],
 })
 export class CatalogModule {}

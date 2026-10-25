@@ -102,8 +102,29 @@ El módulo `identity` (`apps/api/src/modules/identity`) maneja cuentas y sesione
 - Horas cada 30 minutos desde el inicio de cada turno. El servicio debe caber en el turno y no cruzar un bloqueo; el tiempo de preparación ocupa al profesional después del servicio y puede pasar del cierre.
 - Al menos 1 hora de anticipación y hasta 60 días por delante, contados en la zona horaria del negocio. Las horas que no existen por el cambio de horario se omiten.
 - Las horas bloqueadas o pasadas no se devuelven; las ocupadas por citas sí, con `professionalIds` vacío, para mostrarlas en gris.
-- Por ahora solo para miembros del negocio y sin citas (`NoAppointmentsYet`); la página pública y las citas llegan en el paso 8.
+- Las citas que ocupan tiempo se leen del módulo `appointments` (`ListBusyTimes`); una cita cancelada libera su hora.
 - Web: `/panel/negocios/{id}/disponibilidad` ("Ver disponibilidad").
+
+## Citas y clientes
+
+- Módulo `appointments`: dueño de las tablas `appointments` y `customers`.
+- Cada cita guarda inicio, fin del servicio y `busy_until` (fin más preparación), estado (`pending`, `confirmed`, `cancelled`, `completed`, `no_show`), origen (`online` o `manual`) y una copia del nombre y el precio del servicio.
+- **Sin reservas dobles:** la restricción `appointments_no_overlap` (`EXCLUDE USING gist` sobre profesional y `[starts_at, busy_until)`, salvo citas canceladas) hace que, si dos personas reservan la misma hora al mismo tiempo, solo una lo logre.
+- Un cliente por teléfono dentro de cada negocio (`INSERT … ON CONFLICT`); si vuelve a reservar con otro nombre, se guarda el nuevo.
+- El link del cliente lleva un código aleatorio de 144 bits; en la base solo se guarda su hash SHA-256.
+- `GET /businesses/:businessId/appointments?from&days` lista las citas por días locales del negocio (cualquier miembro).
+
+## Página pública de reservas
+
+- Módulo `public-booking`: no guarda nada; usa los casos de uso exportados de negocios, catálogo, disponibilidad y citas. Rutas sin sesión en `/public/businesses/:slug`:
+  - `GET` el negocio, sus servicios activos que alguien realiza y esos profesionales (solo nombre y color).
+  - `GET …/availability` y `…/availability/days`: las mismas reglas de la disponibilidad.
+  - `POST …/appointments` reserva con `serviceId`, `professionalId` (vacío = "Cualquiera"), `startsAt`, `name` y `phone` (WhatsApp), y devuelve el código del link.
+  - `GET …/appointments/:code` muestra esa reserva.
+- El link (`slug`) se resuelve con la función `active_business_id_by_slug` (`SECURITY DEFINER`), que solo devuelve el id de un negocio activo; un negocio suspendido o inexistente responde 404.
+- Al reservar se recalcula la disponibilidad. Si la hora ya no se ofrece, responde 409.
+- Con "Cualquiera", la cita va a quien tenga menos citas ese día (empates por nombre). Si a esa persona la acaban de reservar, se intenta con la siguiente.
+- Límite por visitante: 10 intentos de reserva por minuto y 120 consultas por minuto.
 
 Si cambias el script de roles, recrea el volumen con `docker compose down -v` (borra los datos locales).
 

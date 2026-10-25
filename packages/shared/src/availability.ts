@@ -13,39 +13,47 @@ export const MAX_DAYS_PER_QUERY = 31;
 
 const DATE_MESSAGE = 'Elige una fecha válida.';
 
-const dateSchema = z
+/** A local calendar date ("YYYY-MM-DD"). */
+export const localDateSchema = z
   .string({ error: DATE_MESSAGE })
   .refine((text) => /^\d{4}-\d{2}-\d{2}$/.test(text) && DateTime.fromISO(text).isValid, {
     error: DATE_MESSAGE,
   });
 
 /** Optional: missing or empty means "any professional who performs the service". */
-const professionalIdSchema = z
+export const optionalProfessionalIdSchema = z
   .union([z.literal(''), z.null(), z.uuid({ error: 'Elige un profesional de la lista.' })], {
     error: 'Elige un profesional de la lista.',
   })
   .optional()
   .transform((id) => id || null);
 
-const serviceIdSchema = z.uuid({ error: 'Elige un servicio.' });
+export const serviceIdSchema = z.uuid({ error: 'Elige un servicio.' });
+
+const DAYS_MESSAGE = `Pide entre 1 y ${String(MAX_DAYS_PER_QUERY)} días.`;
+
+/** How many days to ask for (from a query string), up to MAX_DAYS_PER_QUERY. */
+export function daysCountSchema(defaultDays: number) {
+  return z.coerce
+    .number({ error: DAYS_MESSAGE })
+    .int({ error: DAYS_MESSAGE })
+    .min(1, { error: DAYS_MESSAGE })
+    .max(MAX_DAYS_PER_QUERY, { error: DAYS_MESSAGE })
+    .default(defaultDays);
+}
 
 export const availabilityQuerySchema = z.object({
   serviceId: serviceIdSchema,
-  date: dateSchema,
-  professionalId: professionalIdSchema,
+  date: localDateSchema,
+  professionalId: optionalProfessionalIdSchema,
 });
 export type AvailabilityQuery = z.infer<typeof availabilityQuerySchema>;
 
 export const availabilityDaysQuerySchema = z.object({
   serviceId: serviceIdSchema,
-  from: dateSchema,
-  days: z.coerce
-    .number({ error: `Pide entre 1 y ${String(MAX_DAYS_PER_QUERY)} días.` })
-    .int()
-    .min(1, { error: `Pide entre 1 y ${String(MAX_DAYS_PER_QUERY)} días.` })
-    .max(MAX_DAYS_PER_QUERY, { error: `Pide entre 1 y ${String(MAX_DAYS_PER_QUERY)} días.` })
-    .default(14),
-  professionalId: professionalIdSchema,
+  from: localDateSchema,
+  days: daysCountSchema(14),
+  professionalId: optionalProfessionalIdSchema,
 });
 export type AvailabilityDaysQuery = z.infer<typeof availabilityDaysQuerySchema>;
 

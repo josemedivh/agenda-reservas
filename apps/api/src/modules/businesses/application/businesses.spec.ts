@@ -2,6 +2,7 @@ import type { MembershipSummary } from '@turnero/shared';
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
   BusinessEditForbiddenError,
+  BusinessNotFoundError,
   InvalidBusinessDataError,
   SlugTakenError,
 } from '../domain/errors.js';
@@ -10,6 +11,7 @@ import { CheckSlugAvailability } from './check-slug-availability.js';
 import { CreateBusiness } from './create-business.js';
 import { FreeSlugFinder } from './free-slug-finder.js';
 import { GetBusiness } from './get-business.js';
+import { FindActiveBusinessBySlug, GetBusinessProfile } from './public-business.js';
 import { UpdateBusinessDetails } from './update-business-details.js';
 
 const input = {
@@ -140,6 +142,34 @@ describe('business use cases', () => {
       await expect(
         new UpdateBusinessDetails(businesses).execute(membershipIn(id, 'employee'), input),
       ).rejects.toThrow(BusinessEditForbiddenError);
+    });
+  });
+
+  describe('FindActiveBusinessBySlug and GetBusinessProfile', () => {
+    it('finds an active business by its link, without a membership', async () => {
+      const { id } = await createBusiness.execute('user-1', input);
+
+      await expect(
+        new FindActiveBusinessBySlug(businesses).execute('barberia-el-faro'),
+      ).resolves.toMatchObject({ id, name: 'Barbería El Faro', timeZone: 'America/Guayaquil' });
+      await expect(new GetBusinessProfile(businesses).execute({ businessId: id })).resolves.toEqual(
+        expect.objectContaining({ id, slug: 'barberia-el-faro', phone: '+593991234567' }),
+      );
+    });
+
+    it('does not find unknown or suspended businesses', async () => {
+      const { id } = await createBusiness.execute('user-1', input);
+      const record = businesses.records.find((candidate) => candidate.id === id);
+      if (record) {
+        record.status = 'suspended';
+      }
+
+      await expect(
+        new FindActiveBusinessBySlug(businesses).execute('barberia-el-faro'),
+      ).rejects.toThrow(BusinessNotFoundError);
+      await expect(
+        new FindActiveBusinessBySlug(businesses).execute('otra-barberia'),
+      ).rejects.toThrow(BusinessNotFoundError);
     });
   });
 });

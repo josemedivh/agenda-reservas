@@ -14,7 +14,7 @@ import { CurrentMembership } from '../../identity/presentation/request-context.j
 import { SessionGuard } from '../../identity/presentation/session.guard.js';
 import { GetAvailabilityDays, GetDayAvailability } from '../application/availability.js';
 
-/** For members of the business; the public booking page gets its own route with bookings. */
+/** For members of the business; the public booking page has its own routes. */
 @Controller('businesses/:businessId/availability')
 @UseGuards(SessionGuard, BusinessMemberGuard)
 export class AvailabilityController {

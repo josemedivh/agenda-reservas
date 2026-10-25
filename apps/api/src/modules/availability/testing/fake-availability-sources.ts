@@ -1,6 +1,6 @@
 import type {
   Block,
-  MembershipSummary,
+  BusinessScope,
   Professional,
   ProfessionalSchedule,
   Service,
@@ -40,7 +40,7 @@ export class FakeAvailabilitySources
     this.schedules = data.schedules;
   }
 
-  findService(_membership: MembershipSummary, serviceId: string): Promise<Service | null> {
+  findService(_scope: BusinessScope, serviceId: string): Promise<Service | null> {
     return Promise.resolve(this.services.find((service) => service.id === serviceId) ?? null);
   }
 
@@ -60,7 +60,7 @@ export class FakeAvailabilitySources
     return Promise.resolve(this.zone);
   }
 
-  busyIntervals(_membership: MembershipSummary, from: Date, to: Date): Promise<BusyInterval[]> {
+  busyIntervals(_scope: BusinessScope, from: Date, to: Date): Promise<BusyInterval[]> {
     return Promise.resolve(
       this.busy.filter((interval) => interval.startsAt < to && interval.endsAt > from),
     );

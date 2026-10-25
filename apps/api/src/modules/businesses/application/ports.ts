@@ -21,5 +21,7 @@ export abstract class BusinessRepository {
    */
   abstract createWithOwner(business: NewBusiness, ownerUserId: string): Promise<BusinessRecord>;
   abstract findById(businessId: string): Promise<BusinessRecord | null>;
+  /** Looks across all businesses: the id of the active one with this link, if any. */
+  abstract findActiveIdBySlug(slug: string): Promise<string | null>;
   abstract updateProfile(businessId: string, profile: BusinessProfile): Promise<BusinessRecord>;
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   MAX_ACTIVE_PROFESSIONALS,
+  type BusinessScope,
   type MembershipSummary,
   type Professional,
   type ProfessionalInput,
@@ -13,8 +14,8 @@ import { ProfessionalRepository } from './ports.js';
 export class ListProfessionals {
   constructor(private readonly professionals: ProfessionalRepository) {}
 
-  execute(membership: MembershipSummary): Promise<Professional[]> {
-    return this.professionals.list(membership.businessId);
+  execute(scope: BusinessScope): Promise<Professional[]> {
+    return this.professionals.list(scope.businessId);
   }
 }
 
@@ -22,8 +23,8 @@ export class ListProfessionals {
 export class GetProfessional {
   constructor(private readonly professionals: ProfessionalRepository) {}
 
-  async execute(membership: MembershipSummary, professionalId: string): Promise<Professional> {
-    const professional = await this.professionals.findById(membership.businessId, professionalId);
+  async execute(scope: BusinessScope, professionalId: string): Promise<Professional> {
+    const professional = await this.professionals.findById(scope.businessId, professionalId);
     if (!professional) {
       throw new ProfessionalNotFoundError();
     }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { DayAvailability, MembershipSummary, Professional, Service } from '@turnero/shared';
+import type { DayAvailability, BusinessScope, Professional, Service } from '@turnero/shared';
 import { DateTime } from 'luxon';
 import { ProfessionalNotForServiceError, ServiceNotBookableError } from '../domain/errors.js';
 import { availableSlots, type Interval, type ProfessionalDay } from '../domain/slots.js';
@@ -30,11 +30,8 @@ export class AvailabilityCalculator {
     private readonly clock: Clock,
   ) {}
 
-  private async bookableService(
-    membership: MembershipSummary,
-    serviceId: string,
-  ): Promise<Service> {
-    const service = await this.catalog.findService(membership, serviceId);
+  private async bookableService(scope: BusinessScope, serviceId: string): Promise<Service> {
+    const service = await this.catalog.findService(scope, serviceId);
     if (!service?.active) {
       throw new ServiceNotBookableError();
     }
@@ -42,11 +39,11 @@ export class AvailabilityCalculator {
   }
 
   private async performers(
-    membership: MembershipSummary,
+    scope: BusinessScope,
     service: Service,
     professionalId: string | null,
   ): Promise<Professional[]> {
-    const performers = (await this.catalog.listProfessionals(membership)).filter(
+    const performers = (await this.catalog.listProfessionals(scope)).filter(
       (professional) => professional.active && service.professionalIds.includes(professional.id),
     );
     if (professionalId === null) {
@@ -59,21 +56,18 @@ export class AvailabilityCalculator {
     return chosen;
   }
 
-  async compute(
-    membership: MembershipSummary,
-    request: AvailabilityRequest,
-  ): Promise<DayAvailability[]> {
-    const service = await this.bookableService(membership, request.serviceId);
-    const professionals = await this.performers(membership, service, request.professionalId);
+  async compute(scope: BusinessScope, request: AvailabilityRequest): Promise<DayAvailability[]> {
+    const service = await this.bookableService(scope, request.serviceId);
+    const professionals = await this.performers(scope, service, request.professionalId);
     const [timeZone, schedules, blocks] = await Promise.all([
-      this.timeZones.timeZoneOf(membership),
-      this.schedules.workingHours(membership),
-      this.schedules.upcomingBlocks(membership),
+      this.timeZones.timeZoneOf(scope),
+      this.schedules.workingHours(scope),
+      this.schedules.upcomingBlocks(scope),
     ]);
     const first = request.dates[0] ?? '';
     const last = request.dates.at(-1) ?? first;
     const busy = await this.appointments.busyIntervals(
-      membership,
+      scope,
       DateTime.fromISO(first, { zone: timeZone }).startOf('day').toJSDate(),
       DateTime.fromISO(last, { zone: timeZone }).plus({ days: 1 }).startOf('day').toJSDate(),
     );

@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import type {
   Block,
-  MembershipSummary,
+  BusinessScope,
   Professional,
   ProfessionalSchedule,
   Service,
 } from '@turnero/shared';
-import { GetBusiness } from '../../businesses/application/get-business.js';
+import { ListBusyTimes } from '../../appointments/application/appointments.js';
+import { GetBusinessProfile } from '../../businesses/application/public-business.js';
 import { ListProfessionals } from '../../catalog/application/professionals.js';
 import { GetService } from '../../catalog/application/services.js';
 import { ServiceNotFoundError } from '../../catalog/domain/errors.js';
@@ -32,9 +33,9 @@ export class CatalogModuleReader extends CatalogReader {
     super();
   }
 
-  async findService(membership: MembershipSummary, serviceId: string): Promise<Service | null> {
+  async findService(scope: BusinessScope, serviceId: string): Promise<Service | null> {
     try {
-      return await this.getService.execute(membership, serviceId);
+      return await this.getService.execute(scope, serviceId);
     } catch (error) {
       if (error instanceof ServiceNotFoundError) {
         return null;
@@ -43,8 +44,8 @@ export class CatalogModuleReader extends CatalogReader {
     }
   }
 
-  listProfessionals(membership: MembershipSummary): Promise<Professional[]> {
-    return this.listProfessionalsUseCase.execute(membership);
+  listProfessionals(scope: BusinessScope): Promise<Professional[]> {
+    return this.listProfessionalsUseCase.execute(scope);
   }
 }
 
@@ -57,34 +58,39 @@ export class SchedulesModuleReader extends ScheduleReader {
     super();
   }
 
-  workingHours(membership: MembershipSummary): Promise<ProfessionalSchedule[]> {
-    return this.listWorkingHours.execute(membership);
+  workingHours(scope: BusinessScope): Promise<ProfessionalSchedule[]> {
+    return this.listWorkingHours.execute(scope);
   }
 
-  upcomingBlocks(membership: MembershipSummary): Promise<Block[]> {
-    return this.listBlocks.execute(membership);
+  upcomingBlocks(scope: BusinessScope): Promise<Block[]> {
+    return this.listBlocks.execute(scope);
   }
 }
 
 @Injectable()
 export class BusinessesModuleTimeZones extends BusinessTimeZones {
-  constructor(private readonly getBusiness: GetBusiness) {
+  constructor(private readonly getBusinessProfile: GetBusinessProfile) {
     super();
   }
 
-  async timeZoneOf(membership: MembershipSummary): Promise<string> {
-    return (await this.getBusiness.execute(membership)).timeZone;
+  async timeZoneOf(scope: BusinessScope): Promise<string> {
+    return (await this.getBusinessProfile.execute(scope)).timeZone;
   }
 }
 
-/**
- * Appointments do not exist yet: they arrive with bookings (step 8), which will replace this
- * adapter with one that reads them. Until then nobody is busy.
- */
 @Injectable()
-export class NoAppointmentsYet extends AppointmentReader {
-  busyIntervals(): Promise<BusyInterval[]> {
-    return Promise.resolve([]);
+export class AppointmentsModuleReader extends AppointmentReader {
+  constructor(private readonly listBusyTimes: ListBusyTimes) {
+    super();
+  }
+
+  async busyIntervals(scope: BusinessScope, from: Date, to: Date): Promise<BusyInterval[]> {
+    const busy = await this.listBusyTimes.execute(scope, from, to);
+    return busy.map(({ professionalId, startsAt, busyUntil }) => ({
+      professionalId,
+      startsAt,
+      endsAt: busyUntil,
+    }));
   }
 }
 

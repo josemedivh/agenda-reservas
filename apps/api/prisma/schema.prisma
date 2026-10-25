@@ -29,6 +29,23 @@ enum MemberRole {
   @@map("member_role")
 }
 
+enum AppointmentStatus {
+  PENDING   @map("pending")
+  CONFIRMED @map("confirmed")
+  CANCELLED @map("cancelled")
+  COMPLETED @map("completed")
+  NO_SHOW   @map("no_show")
+
+  @@map("appointment_status")
+}
+
+enum AppointmentSource {
+  ONLINE @map("online")
+  MANUAL @map("manual")
+
+  @@map("appointment_source")
+}
+
 model Business {
   id        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name      String
@@ -46,6 +63,8 @@ model Business {
   professionals Professional[]
   services      Service[]
   blocks        Block[]
+  customers     Customer[]
+  appointments  Appointment[]
 
   @@map("businesses")
 }
@@ -115,6 +134,7 @@ model Professional {
   services     ServiceProfessional[]
   workingHours WorkingHours[]
   blocks       Block[]
+  appointments Appointment[]
 
   // Target of (professional_id, business_id) references: assignments cannot cross businesses.
   @@unique([id, businessId], map: "professionals_id_business_id_key")
@@ -138,6 +158,7 @@ model Service {
 
   business      Business              @relation(fields: [businessId], references: [id], onDelete: Restrict)
   professionals ServiceProfessional[]
+  appointments  Appointment[]
 
   @@unique([id, businessId], map: "services_id_business_id_key")
   @@index([businessId])
@@ -194,4 +215,58 @@ model Block {
   @@index([businessId, endsAt])
   @@index([professionalId])
   @@map("blocks")
+}
+
+// People who book. One per phone number within a business; booking again with the same number
+// reuses the customer.
+model Customer {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId String   @map("business_id") @db.Uuid
+  name       String
+  // E.164, e.g. +593991234567 (their WhatsApp).
+  phone      String
+  email      String?
+  notes      String?
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  business     Business      @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  appointments Appointment[]
+
+  @@unique([businessId, phone])
+  @@unique([id, businessId], map: "customers_id_business_id_key")
+  @@map("customers")
+}
+
+// A booked time. UTC instants, end exclusive. The database rejects two appointments of the same
+// professional whose busy spans overlap (exclusion constraint, see the migration).
+model Appointment {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId     String            @map("business_id") @db.Uuid
+  professionalId String            @map("professional_id") @db.Uuid
+  serviceId      String            @map("service_id") @db.Uuid
+  customerId     String            @map("customer_id") @db.Uuid
+  startsAt       DateTime          @map("starts_at") @db.Timestamptz
+  // End of the service itself.
+  endsAt         DateTime          @map("ends_at") @db.Timestamptz
+  // End of the service plus its preparation time: the professional is busy until then.
+  busyUntil      DateTime          @map("busy_until") @db.Timestamptz
+  status         AppointmentStatus
+  source         AppointmentSource
+  // Copies taken when booking, so later catalog changes do not rewrite history (invoicing).
+  serviceName    String            @map("service_name")
+  priceCents     Int               @map("price_cents")
+  // SHA-256 of the code in the customer's link; the code itself is never stored.
+  codeHash       String            @unique @map("code_hash")
+  createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime          @updatedAt @map("updated_at") @db.Timestamptz
+
+  business     Business     @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  professional Professional @relation(fields: [professionalId, businessId], references: [id, businessId], onDelete: Restrict)
+  service      Service      @relation(fields: [serviceId, businessId], references: [id, businessId], onDelete: Restrict)
+  customer     Customer     @relation(fields: [customerId, businessId], references: [id, businessId], onDelete: Restrict)
+
+  @@index([businessId, startsAt])
+  @@index([customerId])
+  @@map("appointments")
 }

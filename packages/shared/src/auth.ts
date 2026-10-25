@@ -49,6 +49,12 @@ export interface MembershipSummary {
   role: MemberRole;
 }
 
+/**
+ * The business a read is about. Members pass their membership; the public booking page passes
+ * the business it found by its link, without any role.
+ */
+export type BusinessScope = Pick<MembershipSummary, 'businessId'>;
+
 export interface CurrentUserResponse {
   user: {
     id: string;

@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import type { MembershipSummary, ProfessionalSchedule, WeeklySchedule } from '@turnero/shared';
+import type {
+  BusinessScope,
+  MembershipSummary,
+  ProfessionalSchedule,
+  WeeklySchedule,
+} from '@turnero/shared';
 import { assertCanManageSchedules, validateWeeklySchedule } from '../domain/schedule-rules.js';
 import { UnknownProfessionalError } from '../domain/errors.js';
 import { ProfessionalDirectory, WorkingHoursRepository } from './ports.js';
@@ -18,8 +23,8 @@ async function assertProfessionalExists(
 export class ListWorkingHours {
   constructor(private readonly workingHours: WorkingHoursRepository) {}
 
-  execute(membership: MembershipSummary): Promise<ProfessionalSchedule[]> {
-    return this.workingHours.listByBusiness(membership.businessId);
+  execute(scope: BusinessScope): Promise<ProfessionalSchedule[]> {
+    return this.workingHours.listByBusiness(scope.businessId);
   }
 }
 

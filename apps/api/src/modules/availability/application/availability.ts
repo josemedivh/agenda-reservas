@@ -6,7 +6,7 @@ import {
   type AvailabilityQuery,
   type DayAvailability,
   type DayAvailabilitySummary,
-  type MembershipSummary,
+  type BusinessScope,
 } from '@turnero/shared';
 import { AvailabilityCalculator } from './availability-calculator.js';
 
@@ -15,8 +15,8 @@ import { AvailabilityCalculator } from './availability-calculator.js';
 export class GetDayAvailability {
   constructor(private readonly calculator: AvailabilityCalculator) {}
 
-  async execute(membership: MembershipSummary, query: AvailabilityQuery): Promise<DayAvailability> {
-    const [day] = await this.calculator.compute(membership, {
+  async execute(scope: BusinessScope, query: AvailabilityQuery): Promise<DayAvailability> {
+    const [day] = await this.calculator.compute(scope, {
       serviceId: query.serviceId,
       professionalId: query.professionalId,
       dates: [query.date],
@@ -31,11 +31,11 @@ export class GetAvailabilityDays {
   constructor(private readonly calculator: AvailabilityCalculator) {}
 
   async execute(
-    membership: MembershipSummary,
+    scope: BusinessScope,
     query: AvailabilityDaysQuery,
   ): Promise<DayAvailabilitySummary[]> {
     const dates = Array.from({ length: query.days }, (_, offset) => addDays(query.from, offset));
-    const days = await this.calculator.compute(membership, {
+    const days = await this.calculator.compute(scope, {
       serviceId: query.serviceId,
       professionalId: query.professionalId,
       dates,

@@ -7,6 +7,7 @@ import { CreateBusiness } from './application/create-business.js';
 import { FreeSlugFinder } from './application/free-slug-finder.js';
 import { GetBusiness } from './application/get-business.js';
 import { BusinessRepository } from './application/ports.js';
+import { FindActiveBusinessBySlug, GetBusinessProfile } from './application/public-business.js';
 import { UpdateBusinessDetails } from './application/update-business-details.js';
 import { PrismaBusinessRepository } from './infrastructure/prisma-business.repository.js';
 import { BusinessErrorFilter } from './presentation/business-error.filter.js';
@@ -24,8 +25,10 @@ import { BusinessesController } from './presentation/businesses.controller.js';
     CheckSlugAvailability,
     GetBusiness,
     UpdateBusinessDetails,
+    FindActiveBusinessBySlug,
+    GetBusinessProfile,
   ],
   // Public API for other modules (e.g. schedules reads the business's time zone).
-  exports: [GetBusiness],
+  exports: [GetBusiness, FindActiveBusinessBySlug, GetBusinessProfile],
 })
 export class BusinessesModule {}

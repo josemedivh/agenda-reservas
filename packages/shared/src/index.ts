@@ -9,3 +9,4 @@ export * from './service.js';
 export * from './schedule.js';
 export * from './block.js';
 export * from './availability.js';
+export * from './appointment.js';

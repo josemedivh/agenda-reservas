@@ -69,6 +69,12 @@ export class PrismaBusinessRepository extends BusinessRepository {
     return row ? toRecord(row) : null;
   }
 
+  async findActiveIdBySlug(slug: string): Promise<string | null> {
+    const rows = await this.prisma.$queryRaw<{ id: string | null }[]>`
+      SELECT active_business_id_by_slug(${slug}) AS id`;
+    return rows[0]?.id ?? null;
+  }
+
   async updateProfile(businessId: string, profile: BusinessProfile): Promise<BusinessRecord> {
     const row = await this.tenants.run(businessId, (tx) =>
       tx.business.update({ where: { id: businessId }, data: profile, select: BUSINESS_FIELDS }),
